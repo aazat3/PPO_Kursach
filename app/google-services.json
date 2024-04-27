@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "906604652226",
+    "firebase_url": "https://ppo-kurs-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ppo-kurs",
+    "storage_bucket": "ppo-kurs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906604652226:android:5e83eba460e4309b0afd5b",
+        "android_client_info": {
+          "package_name": "com.example.ppo_kursach"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7-Dmdx9U5pF-8FMxfBt4gmXQrq1sW92M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
