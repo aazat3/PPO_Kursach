@@ -2,19 +2,34 @@ package com.example.ppo_kursach
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.RecoverySystem
+import android.widget.ArrayAdapter
+import android.widget.Button
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.example.ppo_kursach.databinding.ActivityMainBinding
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseDatabase: DatabaseReference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        firebaseDatabase = Firebase.database.reference
+//        val dealId =
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.main_fragment, DealFragment())
+            .commit()
 
 
-        val database = Firebase.database
-        val myRef = database.getReference("message")
-
-        myRef.setValue("Hello, World!")
-        myRef.child("ch1").setValue("Hello, World!2")
     }
 }
