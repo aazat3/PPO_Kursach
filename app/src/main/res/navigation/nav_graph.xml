@@ -18,5 +18,9 @@
         android:id="@+id/dealInfoFragment"
         android:name="com.example.ppo_kursach.DealInfoFragment"
         android:label="fragment_deal_info"
-        tools:layout="@layout/fragment_deal_info" />
+        tools:layout="@layout/fragment_deal_info" >
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.DealClass" />
+    </fragment>
 </navigation>

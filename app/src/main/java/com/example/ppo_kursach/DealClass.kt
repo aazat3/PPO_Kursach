@@ -1,11 +1,15 @@
 package com.example.ppo_kursach
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class DealClass(
     val date:String,
     val address:String,
     val user:String = "s",
     val client:String = "a"
-):java.io.Serializable{
+): Parcelable {
     companion object {
         fun getDealData():ArrayList<DealClass>{
             // create an arraylist of type employee class

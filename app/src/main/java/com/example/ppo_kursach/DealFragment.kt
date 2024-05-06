@@ -14,6 +14,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -52,6 +53,7 @@ class DealFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_deal, container, false)
     }
 
@@ -68,9 +70,24 @@ class DealFragment : Fragment(), View.OnClickListener {
         dealAdapter.setOnClickListener(object :
             DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
-                view.findNavController().navigate(R.id.dealInfoFragment)
+                val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
+                view.findNavController().navigate(action)
             }
         })
+
+        view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.favorite -> {
+                    Toast.makeText(context, "Favorites Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.search -> {
+                    Toast.makeText(context, "Search Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
 
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.RecoverySystem
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Toast
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.databinding.ActivityMainBinding
@@ -35,14 +36,17 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.home -> {
 //                    loadFragment(HomeFragment())
+                    Toast.makeText(this, "Home Clicked", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.message -> {
 //                    loadFragment(ChatFragment())
+                    Toast.makeText(this, "Message Clicked", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.settings -> {
 //                    loadFragment(SettingFragment())
+                    Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show()
                     true
                 }
 
