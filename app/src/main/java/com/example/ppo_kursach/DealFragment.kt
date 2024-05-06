@@ -1,5 +1,6 @@
 package com.example.ppo_kursach
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Toast
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DatabaseReference
@@ -53,14 +57,23 @@ class DealFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val addDealButton = view.findViewById<Button>(R.id.add_deal)
+//        val addDealButton = view.findViewById<Button>(R.id.add_deal)
+//        addDealButton.setOnClickListener(this)
+
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
         dealList=DealClass.getDealData()
         dealAdapter = DealAdapter(dealList)
         dealRecyclerView.layoutManager = LinearLayoutManager(context)
         dealRecyclerView.adapter = dealAdapter
-        addDealButton.setOnClickListener(this)
+        dealAdapter.setOnClickListener(object :
+            DealAdapter.OnClickListener {
+            override fun onClick(position: Int, model: DealClass) {
+                view.findNavController().navigate(R.id.dealInfoFragment)
+            }
+        })
+
     }
+
 
     companion object {
         /**
@@ -90,7 +103,7 @@ class DealFragment : Fragment(), View.OnClickListener {
     override fun onClick(p0: View?) {
         if (p0 != null) {
             when(p0.id){
-                R.id.add_deal -> addDeal(DealClass(date = "1", address = "1", ))
+//                R.id.add_deal -> addDeal(DealClass(date = "1", address = "1", ))
             }
         }
     }
