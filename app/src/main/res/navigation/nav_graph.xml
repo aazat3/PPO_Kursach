@@ -13,7 +13,14 @@
         <action
             android:id="@+id/action_dealFragment_to_dealInfoFragment"
             app:destination="@id/dealInfoFragment" />
+        <action
+            android:id="@+id/action_dealFragment_to_decorationFragment"
+            app:destination="@id/decorationFragment" />
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.DealClass" />
     </fragment>
+
     <fragment
         android:id="@+id/dealInfoFragment"
         android:name="com.example.ppo_kursach.DealInfoFragment"
@@ -22,5 +29,33 @@
         <argument
             android:name="deal"
             app:argType="com.example.ppo_kursach.DealClass" />
+        <action
+            android:id="@+id/action_dealInfoFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/decorationFragment"
+        android:name="com.example.ppo_kursach.DecorationFragment"
+        android:label="decorationFragment" >
+        <action
+            android:id="@+id/action_decorationFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
+        <action
+            android:id="@+id/action_decorationFragment_to_decorationInfoFragment"
+            app:destination="@id/decorationInfoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/decorationInfoFragment"
+        android:name="com.example.ppo_kursach.DecorationInfoFragment"
+        android:label="fragment_decoration_info"
+        tools:layout="@layout/fragment_decoration_info" >
+        <action
+            android:id="@+id/action_decorationInfoFragment_to_decorationFragment"
+            app:destination="@id/decorationFragment" />
+        <argument
+            android:name="decoration"
+            app:argType="com.example.ppo_kursach.DecorationClass" />
     </fragment>
 </navigation>

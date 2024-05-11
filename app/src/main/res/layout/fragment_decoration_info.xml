@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DealInfoFragment">
+    tools:context=".DecorationInfoFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <com.google.android.material.textfield.TextInputLayout
@@ -16,12 +16,12 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="idDeal" />
+            android:text="id_decoration" />
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/id_deal"
+            android:id="@+id/id_decoration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="id_deal" />
+            android:text="id_decoration" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -32,11 +32,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/id_user"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="id_user"
-            android:text="id_user" />
+            android:hint="name"
+            android:text="name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -47,11 +47,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/date"
+            android:id="@+id/type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="date"
-            android:text="date"
+            android:hint="type"
+            android:text="type"
             android:inputType="date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/id_user" />
@@ -65,11 +65,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/address"
+            android:id="@+id/quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="address"
-            android:text="address"
+            android:hint="quantity"
+            android:text="quantity"
             android:inputType="textPostalAddress"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date" />
@@ -83,11 +83,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/client"
+            android:id="@+id/condition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="client"
-            android:text="client"
+            android:hint="condition"
+            android:text="condition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/address" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -100,11 +100,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/client_number"
+            android:id="@+id/price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="client_number"
-            android:text="client_number"
+            android:hint="price"
+            android:text="price"
             android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/client" />
@@ -119,11 +119,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/price"
+            android:id="@+id/difficultyInst"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="price"
-            android:text="price"
+            android:hint="difficultyInst"
+            android:text="difficultyInst"
             android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/client_number" />
@@ -137,11 +137,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout7">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/difficulty"
+            android:id="@+id/difficultyTr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="difficulty"
-            android:text="difficulty"
+            android:hint="difficultyTr"
+            android:text="difficultyTr"
             android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/price" />
@@ -155,36 +155,36 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout11">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/status"
+            android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="status"
-            android:text="status"
+            android:hint="photo"
+            android:text="photo"
             android:inputType="numberDecimal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/difficulty" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/save_deal"
+        android:id="@+id/save_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Save"
-        app:layout_constraintEnd_toStartOf="@+id/delete_deal"
+        app:layout_constraintEnd_toStartOf="@+id/delete_decoration"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
 
     <Button
-        android:id="@+id/delete_deal"
+        android:id="@+id/delete_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/save_deal"
+        app:layout_constraintStart_toEndOf="@+id/save_decoration"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

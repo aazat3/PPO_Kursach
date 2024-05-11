@@ -1,113 +1,144 @@
 package com.example.ppo_kursach
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlin.math.log
+import kotlin.properties.Delegates
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DealFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DealFragment : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var firebaseDatabase: DatabaseReference
+
+    private lateinit var firebaseDealDatabase: DatabaseReference
+    private lateinit var firebaseLastIdDatabase: DatabaseReference
     lateinit var dealList: ArrayList<DealClass>
     lateinit var dealAdapter: DealAdapter
-
+    var lastDealId by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
+        firebaseDealDatabase = Firebase.database.getReference("DealClass")
+        firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastDealId")
+
+        setFragmentResultListener("request_key") { key, bundle ->
+            val returnedSaveDeal = bundle.getParcelable<DealClass>("save_key")
+            val returnedDeleteDeal = bundle.getParcelable<DealClass>("delete_key")
+//            val returnedSaveDeal = bundle.getParcelable("extra_key", DealClass::class.java)
+            if (returnedSaveDeal != null) {
+                if(lastDealId <= returnedSaveDeal.idDeal)
+                    firebaseLastIdDatabase.setValue(returnedSaveDeal.idDeal)
+                firebaseDealDatabase.child(returnedSaveDeal.idDeal.toString()).setValue(returnedSaveDeal)
+            }
+            if (returnedDeleteDeal != null) {
+                firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
+            }
         }
-        val firebaseDatabase = Firebase.database.reference
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
-        return inflater.inflate(R.layout.fragment_deal, container, false)
+        val view = inflater.inflate(R.layout.fragment_deal, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        val addDealButton = view.findViewById<Button>(R.id.add_deal)
-//        addDealButton.setOnClickListener(this)
 
+        val navController = view.findNavController()
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
-        dealList=DealClass.getDealData()
+        dealList= arrayListOf()
         dealAdapter = DealAdapter(dealList)
         dealRecyclerView.layoutManager = LinearLayoutManager(context)
         dealRecyclerView.adapter = dealAdapter
+
         dealAdapter.setOnClickListener(object :
             DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
                 val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
-                view.findNavController().navigate(action)
+                navController.navigate(action)
             }
         })
 
         view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.favorite -> {
-                    Toast.makeText(context, "Favorites Clicked", Toast.LENGTH_SHORT).show()
+                R.id.new_deal -> {
+                    val model = DealClass(idDeal = lastDealId + 1)
+                    val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
+                    navController.navigate(action)
                     true
                 }
                 R.id.search -> {
-                    Toast.makeText(context, "Search Clicked", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false
             }
         }
 
+        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val getLastDealId: Int? = snapshot.getValue(Int::class.java)
+                if (getLastDealId != null) {
+                    lastDealId = getLastDealId
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+        firebaseDealDatabase.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
+                if (deal != null) {
+                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+                    dealList.add(deal)
+                    dealAdapter.notifyItemInserted(dealList.size)
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                dealAdapter.notifyDataSetChanged()
+                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+            }
+
+        })
+
     }
 
-
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DealFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             DealFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }
@@ -124,4 +155,5 @@ class DealFragment : Fragment(), View.OnClickListener {
             }
         }
     }
+
 }

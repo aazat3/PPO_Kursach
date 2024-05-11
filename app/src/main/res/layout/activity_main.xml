@@ -5,8 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/content_main" />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/gfgNavigation_host_gfgFragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        android:layout_marginBottom="60dp"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"

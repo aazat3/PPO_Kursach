@@ -28,10 +28,12 @@ class DealAdapter(private var dealList: List<DealClass>): RecyclerView.Adapter<D
 
         val item = dealList[position]
         with(holder.binding){
+            idDeal.text = item.idDeal.toString()
             date.text = item.date
             address.text = item.address
-            user.text = item.user
+            user.text = item.idUser.toString()
             client.text = item.client
+            price.text = item.price.toString()
 
         }
         holder.itemView.setOnClickListener {

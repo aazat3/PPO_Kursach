@@ -6,6 +6,7 @@ plugins {
     id 'androidx.navigation.safeargs'
     id 'kotlin-android'
 }
+apply plugin: 'kotlin-kapt'
 
 android {
     namespace 'com.example.ppo_kursach'
@@ -40,7 +41,7 @@ android {
 }
 
 dependencies {
-    def nav_version = "2.2.1"
+    def nav_version = "2.3.0-alpha05"
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -52,6 +53,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.fragment:fragment-ktx:1.6.0-alpha02"
 
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
