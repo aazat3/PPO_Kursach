@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dealFragment">
+    app:startDestination="@id/authenticationFragment">
 
     <fragment
         android:id="@+id/dealFragment"
@@ -19,6 +19,12 @@
         <argument
             android:name="deal"
             app:argType="com.example.ppo_kursach.DealClass" />
+        <action
+            android:id="@+id/action_dealFragment_to_authenticationFragment"
+            app:destination="@id/authenticationFragment" />
+        <action
+            android:id="@+id/action_dealFragment_to_statisticFragment"
+            app:destination="@id/statisticFragment" />
     </fragment>
 
     <fragment
@@ -32,6 +38,9 @@
         <action
             android:id="@+id/action_dealInfoFragment_to_dealFragment"
             app:destination="@id/dealFragment" />
+        <action
+            android:id="@+id/action_dealInfoFragment_to_dealsDecorationFragment"
+            app:destination="@id/dealsDecorationFragment" />
     </fragment>
 
     <fragment
@@ -44,6 +53,9 @@
         <action
             android:id="@+id/action_decorationFragment_to_decorationInfoFragment"
             app:destination="@id/decorationInfoFragment" />
+        <action
+            android:id="@+id/action_decorationFragment_to_statisticFragment"
+            app:destination="@id/statisticFragment" />
     </fragment>
 
     <fragment
@@ -57,5 +69,43 @@
         <argument
             android:name="decoration"
             app:argType="com.example.ppo_kursach.DecorationClass" />
+    </fragment>
+    <fragment
+        android:id="@+id/dealsDecorationFragment"
+        android:name="com.example.ppo_kursach.DealsDecorationFragment"
+        android:label="fragment_deals_decoration"
+        tools:layout="@layout/fragment_deals_decoration" >
+        <argument
+            android:name="idDeal"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_dealsDecorationFragment_to_dealsDecorationInfoFragment"
+            app:destination="@id/dealsDecorationInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dealsDecorationInfoFragment"
+        android:name="com.example.ppo_kursach.DealsDecorationInfoFragment"
+        android:label="fragment_deals_decoration_info"
+        tools:layout="@layout/fragment_deals_decoration_info" />
+    <fragment
+        android:id="@+id/authenticationFragment"
+        android:name="com.example.ppo_kursach.AuthenticationFragment"
+        android:label="fragment_authentication"
+        tools:layout="@layout/fragment_authentication" >
+        <action
+            android:id="@+id/action_authenticationFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statisticFragment"
+        android:name="com.example.ppo_kursach.StatisticFragment"
+        android:label="fragment_statistic"
+        tools:layout="@layout/fragment_statistic" >
+        <action
+            android:id="@+id/action_statisticFragment_to_decorationFragment"
+            app:destination="@id/decorationFragment" />
+        <action
+            android:id="@+id/action_statisticFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
     </fragment>
 </navigation>

@@ -29,7 +29,7 @@ class DecorationFragment : Fragment(), View.OnClickListener {
     private lateinit var firebaseLastIdDatabase: DatabaseReference
     lateinit var decorationList: ArrayList<DecorationClass>
     lateinit var decorationAdapter: DecorationAdapter
-    var lastDecorationId by Delegates.notNull<Int>()
+    var lastIdDecoration by Delegates.notNull<Int>()
     lateinit var storage: StorageReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,13 +38,13 @@ class DecorationFragment : Fragment(), View.OnClickListener {
         firebaseDecorationDatabase = Firebase.database.getReference("DecorationClass")
         storage = Firebase.storage.getReference("Decoration")
 
-        firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastDecorationId")
+        firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDecoration")
         setFragmentResultListener("request_key") { key, bundle ->
             val returnedSaveDecoration = bundle.getParcelable<DecorationClass>("save_key")
             val returnedDeleteDecoration = bundle.getParcelable<DecorationClass>("delete_key")
 //            val returnedSaveDecoration = bundle.getParcelable("extra_key", DecorationClass::class.java)
             if (returnedSaveDecoration != null) {
-                if(lastDecorationId <= returnedSaveDecoration.idDecoration)
+                if(lastIdDecoration <= returnedSaveDecoration.idDecoration)
                     firebaseLastIdDatabase.setValue(returnedSaveDecoration.idDecoration)
                 firebaseDecorationDatabase.child(returnedSaveDecoration.idDecoration.toString()).setValue(returnedSaveDecoration)
             }
@@ -84,7 +84,7 @@ class DecorationFragment : Fragment(), View.OnClickListener {
         view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.new_deal -> {
-                    val model = DecorationClass(idDecoration = lastDecorationId + 1)
+                    val model = DecorationClass(idDecoration = lastIdDecoration + 1)
                     val action = DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
                     navController.navigate(action)
                     true
@@ -98,9 +98,9 @@ class DecorationFragment : Fragment(), View.OnClickListener {
 
         firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val getLastDecorationId: Int? = snapshot.getValue(Int::class.java)
-                if (getLastDecorationId != null) {
-                    lastDecorationId = getLastDecorationId
+                val getLastIdDecoration: Int? = snapshot.getValue(Int::class.java)
+                if (getLastIdDecoration != null) {
+                    lastIdDecoration = getLastIdDecoration
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -114,10 +114,7 @@ class DecorationFragment : Fragment(), View.OnClickListener {
                 if (decoration != null) {
                     Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
                     decorationList.add(decoration)
-                    println(decorationList.last().idDecoration.toString())
-//                    decorationList.add(decoration)
-                    decorationAdapter.notifyItemInserted(decorationList.size + 1)
-//                    decorationAdapter.notifyDataSetChanged()
+                    decorationAdapter.notifyDataSetChanged()
 
                 }
             }

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.to_statistic -> {
-                    navController.navigate(R.id.decorationFragment)
+                    navController.navigate(R.id.statisticFragment)
                     true
                 }
 

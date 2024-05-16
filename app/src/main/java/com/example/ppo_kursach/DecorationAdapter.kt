@@ -9,6 +9,7 @@ import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.firebase.storage.FirebaseStorage
 
 
+
 class DecorationAdapter(private var decorationList: List<DecorationClass>): RecyclerView.Adapter<DecorationAdapter.DecorationViewHolder>() {
     private var onClickListener: OnClickListener? = null
 
@@ -37,15 +38,13 @@ class DecorationAdapter(private var decorationList: List<DecorationClass>): Recy
             type.text = item.type.toString()
             price.text = item.price.toString()
 
-//            val storage = FirebaseStorage.getInstance().getReference("Decoration")
-//            val gsReference = storage.child(item.photo)
-//            GlideApp.with(photo.context)
-//                .load(gsReference)
-//                .into(photo)
-
-              Glide.with(photo.context)
-                .load(item.photo)
-                .into(photo)
+            val storage = FirebaseStorage.getInstance().getReference("Decoration")
+            if (item.photo != ""){
+                val gsReference = storage.child(item.photo)
+                Glide.with(photo.context)
+                    .load(gsReference)
+                    .into(photo)
+            }
 
         }
         holder.itemView.setOnClickListener {

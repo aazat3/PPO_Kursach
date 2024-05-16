@@ -73,6 +73,11 @@ class DealInfoFragment : Fragment() {
             )
             view.findNavController().navigateUp()
         }
+
+        view.findViewById<Button>(R.id.deals_decoration).setOnClickListener{
+            val action = DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal.idDeal)
+            view.findNavController().navigate(action)
+        }
         return view
     }
 

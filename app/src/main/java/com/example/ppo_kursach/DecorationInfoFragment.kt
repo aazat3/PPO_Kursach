@@ -6,11 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.google.firebase.storage.FirebaseStorage
 
 class DecorationInfoFragment : Fragment() {
     private val args: DecorationInfoFragmentArgs by navArgs()
@@ -33,7 +36,7 @@ class DecorationInfoFragment : Fragment() {
         val price = view.findViewById<TextView>(R.id.price)
         val difficultyInst = view.findViewById<TextView>(R.id.difficultyInst)
         val difficultyTr = view.findViewById<TextView>(R.id.difficultyTr)
-        val photo = view.findViewById<TextView>(R.id.photo)
+        val photo = view.findViewById<ImageView>(R.id.photo)
 
         idDecoration.text = decoration.idDecoration.toString()
         name.text = decoration.name.toString()
@@ -43,7 +46,17 @@ class DecorationInfoFragment : Fragment() {
         price.text = decoration.price.toString()
         difficultyInst.text = decoration.difficultyInst.toString()
         difficultyTr.text = decoration.difficultyTr.toString()
-        photo.text = decoration.photo
+        var photoName = ""
+        val storage = FirebaseStorage.getInstance().getReference("Decoration")
+        if (decoration.photo != ""){
+            val gsReference = storage.child(decoration.photo)
+            photoName = gsReference.name
+            Glide.with(photo.context)
+                .load(gsReference)
+                .into(photo)
+        }else { photoName = ""}
+
+
 
         view.findViewById<Button>(R.id.save_decoration).setOnClickListener{
             val model = DecorationClass(
@@ -55,7 +68,7 @@ class DecorationInfoFragment : Fragment() {
                 price.text.toString().toInt(),
                 difficultyInst.text.toString().toInt(),
                 difficultyTr.text.toString().toInt(),
-                photo.text.toString())
+                photoName)
             setFragmentResult(
                 "request_key",
                 bundleOf("save_key" to model)
