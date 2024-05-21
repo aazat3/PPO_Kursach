@@ -8,9 +8,9 @@ class DecorationClass(
     val idDecoration:Int,
     val name: String,
     val type: Int,
-    val quantity:Int,
+    var quantity:Int,
     val condition:Int,
-    val price:Int,
+    var price:Int,
     val difficultyInst: Int,
     val difficultyTr: Int,
     val photo: String

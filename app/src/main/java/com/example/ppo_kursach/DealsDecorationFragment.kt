@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -25,7 +27,8 @@ class DealsDecorationFragment : Fragment() {
 
     private lateinit var firebaseDealsDecorationDatabase: DatabaseReference
     private lateinit var firebaseLastIdDatabase: DatabaseReference
-    lateinit var dealsDecorationList: ArrayList<DealsDecorationClass>
+    private lateinit var firebaseDecorationDatabase: DatabaseReference
+    lateinit var dealsDecorationList: ArrayList<DecorationClass>
     lateinit var dealsDecorationAdapter: DealsDecorationAdapter
     var lastIdDealsDecoration by Delegates.notNull<Int>()
     private val args: DealsDecorationFragmentArgs by navArgs()
@@ -34,19 +37,34 @@ class DealsDecorationFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         firebaseDealsDecorationDatabase = Firebase.database.getReference("DealsDecorationClass")
+        firebaseDecorationDatabase = Firebase.database.getReference("DecorationClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDealsDecoration")
 
-        setFragmentResultListener("request_key") { key, bundle ->
-            val returnedSaveDealsDecoration = bundle.getParcelable<DealsDecorationClass>("save_key")
-            val returnedDeleteDealsDecoration = bundle.getParcelable<DealsDecorationClass>("delete_key")
+        setFragmentResultListener("deals_decoration_key") { key, bundle ->
+            val returnedSaveDealsDecoration = bundle.getParcelable<DecorationClass>("save_key")
+            val returnedDeleteDealsDecoration = bundle.getParcelable<DecorationClass>("delete_key")
+            val returnedAddDecoration = bundle.getParcelable<DecorationClass>("add_deals_decoration_key")
+
+
 //            val returnedSaveDealsDecoration = bundle.getParcelable("extra_key", DealsDecorationClass::class.java)
             if (returnedSaveDealsDecoration != null) {
-                if(lastIdDealsDecoration <= returnedSaveDealsDecoration.idDealsDecoration)
-                    firebaseLastIdDatabase.setValue(returnedSaveDealsDecoration.idDealsDecoration)
-                firebaseDealsDecorationDatabase.child(returnedSaveDealsDecoration.idDealsDecoration.toString()).setValue(returnedSaveDealsDecoration)
+                Toast.makeText(context, "New decoration saved", Toast.LENGTH_SHORT).show()
+
+//                if(lastIdDealsDecoration <= returnedSaveDealsDecoration.idDealsDecoration)
+//                    firebaseLastIdDatabase.setValue(returnedSaveDealsDecoration.idDealsDecoration)
+//                firebaseDealsDecorationDatabase.child(returnedSaveDealsDecoration.idDealsDecoration.toString()).setValue(returnedSaveDealsDecoration)
             }
             if (returnedDeleteDealsDecoration != null) {
-                firebaseDealsDecorationDatabase.child(returnedDeleteDealsDecoration.idDealsDecoration.toString()).removeValue()
+                Toast.makeText(context, "New decoration deleted", Toast.LENGTH_SHORT).show()
+
+//                firebaseDealsDecorationDatabase.child(returnedDeleteDealsDecoration.idDealsDecoration.toString()).removeValue()
+            }
+            if (returnedAddDecoration != null) {
+                Toast.makeText(context, "New decoration added", Toast.LENGTH_SHORT).show()
+                val returnedAddDealsDecoration = DealsDecorationClass(lastIdDealsDecoration + 1, args.deal.idDeal, returnedAddDecoration.idDecoration, returnedAddDecoration.quantity, returnedAddDecoration.price, args.deal.date)
+                if(lastIdDealsDecoration <= returnedAddDealsDecoration.idDealsDecoration)
+                    firebaseLastIdDatabase.setValue(returnedAddDealsDecoration.idDealsDecoration)
+                firebaseDealsDecorationDatabase.child(returnedAddDealsDecoration.idDealsDecoration.toString()).setValue(returnedAddDealsDecoration)
             }
         }
     }
@@ -62,7 +80,7 @@ class DealsDecorationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val idDeal = args.idDeal
+        val deal = args.deal
 
         val navController = view.findNavController()
         val dealsDecorationRecyclerView = view.findViewById<RecyclerView>(R.id.deals_decoration_recycler_view)
@@ -71,19 +89,20 @@ class DealsDecorationFragment : Fragment() {
         dealsDecorationRecyclerView.layoutManager = LinearLayoutManager(context)
         dealsDecorationRecyclerView.adapter = dealsDecorationAdapter
 
-//        dealsDecorationAdapter.setOnClickListener(object :
-//            DealsDecorationAdapter.OnClickListener {
-//            override fun onClick(position: Int, model: DealsDecorationClass) {
-//                val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
-//                navController.navigate(action)
-//            }
-//        })
+        dealsDecorationAdapter.setOnClickListener(object :
+            DealsDecorationAdapter.OnClickListener {
+            override fun onClick(position: Int, model: DecorationClass) {
+                val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationInfoFragment(model)
+                navController.navigate(action)
+            }
+        })
 
         view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.new_deal -> {
-                    val model = DealsDecorationClass(idDealsDecoration = lastIdDealsDecoration + 1)
-                    val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationInfoFragment()
+//                    val model = DealsDecorationClass(idDealsDecoration = lastIdDealsDecoration + 1)
+//                    val model = DealClass(idDealsDecoration = lastIdDealsDecoration + 1)
+                    val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationAddFragment(deal)
                     navController.navigate(action)
                     true
                 }
@@ -106,37 +125,103 @@ class DealsDecorationFragment : Fragment() {
             }
         })
 
+        firebaseDealsDecorationDatabase.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val dealsDecoration = dataSnapshot.getValue(DealsDecorationClass::class.java)
+                    if (dealsDecoration != null) {
+                        if(dealsDecoration.idDeal == deal.idDeal)
+                            firebaseDecorationDatabase.addValueEventListener(object :ValueEventListener{
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    for (dataSnapshot2 in snapshot.children) {
+                                        val getDecoration = dataSnapshot2.getValue(DecorationClass::class.java)
+                                        if (getDecoration != null){
+                                            if(getDecoration.idDecoration == dealsDecoration.idDecoration){
+                                                getDecoration.quantity = dealsDecoration.quantity
+                                                getDecoration.price = dealsDecoration.price
+                                                dealsDecorationList.add(getDecoration)
+                                            }
+                                        }
+                                    }
+                                    dealsDecorationAdapter.notifyDataSetChanged()
+                                }
+                                override fun onCancelled(error: DatabaseError) {
+                                    Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+                                }
 
-        firebaseDealsDecorationDatabase.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val dealsDecoration: DealsDecorationClass? = snapshot.getValue(DealsDecorationClass::class.java)
-                if (dealsDecoration != null) {
-                    if(dealsDecoration.idDeal == idDeal){
-                        Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-                        dealsDecorationList.add(dealsDecoration)
-                        dealsDecorationAdapter.notifyItemInserted(dealsDecorationList.size)
+                            })
                     }
                 }
             }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                dealsDecorationAdapter.notifyDataSetChanged()
-                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
-            }
-
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
 
         })
+
+//        firebaseDealsDecorationDatabase.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                val dealsDecoration: DealsDecorationClass? = snapshot.getValue(DealsDecorationClass::class.java)
+//                if (dealsDecoration != null) {
+//                    if(dealsDecoration.idDeal == deal.idDeal){
+//                        firebaseDecorationDatabase.addChildEventListener(object : ChildEventListener {
+//                            override fun onChildAdded(
+//                                snapshot: DataSnapshot,
+//                                previousChildName: String?,
+//                            ) {
+//                                val getDecoration: DecorationClass? = snapshot.getValue(DecorationClass::class.java)
+//                                if (getDecoration != null) {
+//                                    if(getDecoration.idDecoration == dealsDecoration.idDecoration) {
+////                                        Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+//                                        getDecoration.quantity = dealsDecoration.quantity
+//                                        getDecoration.price = dealsDecoration.price
+//
+//                                        dealsDecorationList.add(getDecoration)
+//                                        dealsDecorationAdapter.notifyItemInserted(dealsDecorationList.size)
+//                                    }
+//                                }
+//                            }
+//                            override fun onChildChanged(
+//                                snapshot: DataSnapshot,
+//                                previousChildName: String?,
+//                            ) {
+//                            }
+//                            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                            }
+//                            override fun onChildMoved(
+//                                snapshot: DataSnapshot,
+//                                previousChildName: String?,
+//                            ) {
+//                            }
+//                            override fun onCancelled(error: DatabaseError) {
+//                                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
+//                            }
+//                        })
+////                        dealsDecorationList.add(dealsDecoration)
+////                        dealsDecorationAdapter.notifyItemInserted(dealsDecorationList.size)
+//                    }
+//                }
+//            }
+//
+//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                dealsDecorationAdapter.notifyDataSetChanged()
+//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+//            }
+//
+//        })
 
     }
 

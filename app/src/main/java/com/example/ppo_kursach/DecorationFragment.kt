@@ -108,34 +108,49 @@ class DecorationFragment : Fragment(), View.OnClickListener {
             }
         })
 
-        firebaseDecorationDatabase.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val decoration: DecorationClass? = snapshot.getValue(DecorationClass::class.java)
-                if (decoration != null) {
-                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-                    decorationList.add(decoration)
-                    decorationAdapter.notifyDataSetChanged()
-
+        firebaseDecorationDatabase.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val item = dataSnapshot.getValue(DecorationClass::class.java)
+                    item?.let { decorationList.add(it) }
                 }
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, snapshot.key, Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
                 decorationAdapter.notifyDataSetChanged()
-                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
+
         })
+
+//        firebaseDecorationDatabase.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                val decoration: DecorationClass? = snapshot.getValue(DecorationClass::class.java)
+//                if (decoration != null) {
+//                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+//                    decorationList.add(decoration)
+//                    decorationAdapter.notifyDataSetChanged()
+//
+//                }
+//            }
+//
+//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, snapshot.key, Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                decorationAdapter.notifyDataSetChanged()
+//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+//            }
+//        })
     }
 
 

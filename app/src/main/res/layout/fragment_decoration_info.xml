@@ -50,8 +50,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="type"
-            android:text="type"
             android:inputType="date"
+            android:text="type"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/id_user" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -68,8 +68,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="quantity"
-            android:text="quantity"
             android:inputType="textPostalAddress"
+            android:text="quantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -103,8 +103,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="price"
-            android:text="price"
             android:inputType="numberDecimal"
+            android:text="price"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/client" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -122,8 +122,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="difficultyInst"
-            android:text="difficultyInst"
             android:inputType="numberDecimal"
+            android:text="difficultyInst"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/client_number" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -140,8 +140,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="difficultyTr"
-            android:text="difficultyTr"
             android:inputType="numberDecimal"
+            android:text="difficultyTr"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/price" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -163,7 +163,7 @@
         android:text="Save"
         app:layout_constraintEnd_toStartOf="@+id/delete_decoration"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/set_image"
         app:layout_constraintTop_toBottomOf="@+id/photo" />
 
     <Button
@@ -175,6 +175,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/save_decoration"
+        app:layout_constraintTop_toBottomOf="@+id/photo" />
+
+    <Button
+        android:id="@+id/set_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Set Image"
+        app:layout_constraintEnd_toStartOf="@+id/save_decoration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
@@ -18,21 +19,32 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.lang.reflect.InvocationTargetException
+import kotlin.math.log
 
 class StatisticFragment : Fragment() {
 
-    private lateinit var firebaseDealDatabase: DatabaseReference
+    private lateinit var firebaseStatisticDatabase: DatabaseReference
     lateinit var dealList: ArrayList<DealClass>
     lateinit var dealAdapter: DealAdapter
+    private val args: StatisticFragmentArgs? by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebaseDealDatabase = Firebase.database.getReference("StatisticClass")
+        firebaseStatisticDatabase = Firebase.database.getReference("StatisticClass")
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        try{
+            val deal = args?.deal
+            if(deal != null){
+                firebaseStatisticDatabase.child(deal.idDeal.toString()).setValue(deal)
+            }
+        } catch (e: InvocationTargetException){
+            null
+        }
 
         val navController = view.findNavController()
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
@@ -44,39 +56,54 @@ class StatisticFragment : Fragment() {
         dealAdapter.setOnClickListener(object :
             DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
-                val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
+                val action = StatisticFragmentDirections.actionStatisticFragmentToStatisticInfoFragment(model)
                 navController.navigate(action)
             }
         })
 
-        firebaseDealDatabase.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
-                if (deal != null) {
-                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-                    dealList.add(deal)
-                    dealAdapter.notifyItemInserted(dealList.size)
+        firebaseStatisticDatabase.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val item = dataSnapshot.getValue(DealClass::class.java)
+                    item?.let { dealList.add(it) }
                 }
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
                 dealAdapter.notifyDataSetChanged()
-                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
 
         })
+
+//        firebaseStatisticDatabase.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
+//                if (deal != null) {
+//                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+//                    dealList.add(deal)
+//                    dealAdapter.notifyItemInserted(dealList.size)
+//                }
+//            }
+//
+//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                dealAdapter.notifyDataSetChanged()
+//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+//            }
+//
+//        })
 
     }
 

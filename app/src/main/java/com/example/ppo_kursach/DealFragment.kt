@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.EventListener
 import kotlin.properties.Delegates
 
 class DealFragment : Fragment(), View.OnClickListener {
@@ -34,9 +35,19 @@ class DealFragment : Fragment(), View.OnClickListener {
         firebaseDealDatabase = Firebase.database.getReference("DealClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDeal")
 
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_deal, container, false)
         setFragmentResultListener("request_key") { key, bundle ->
             val returnedSaveDeal = bundle.getParcelable<DealClass>("save_key")
             val returnedDeleteDeal = bundle.getParcelable<DealClass>("delete_key")
+            val returnedCompleteDeal = bundle.getParcelable<DealClass>("complete_key")
+
 //            val returnedSaveDeal = bundle.getParcelable("extra_key", DealClass::class.java)
             if (returnedSaveDeal != null) {
                 if(lastIdDeal <= returnedSaveDeal.idDeal)
@@ -46,17 +57,14 @@ class DealFragment : Fragment(), View.OnClickListener {
             if (returnedDeleteDeal != null) {
                 firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
             }
+            if (returnedCompleteDeal != null) {
+                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(returnedCompleteDeal)
+                view.findNavController().navigate(action)
+                firebaseDealDatabase.child(returnedCompleteDeal.idDeal.toString()).removeValue()
+            }
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_deal, container, false)
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -102,35 +110,49 @@ class DealFragment : Fragment(), View.OnClickListener {
             }
         })
 
-
-        firebaseDealDatabase.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
-                if (deal != null) {
-                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-                    dealList.add(deal)
-                    dealAdapter.notifyItemInserted(dealList.size)
+        firebaseDealDatabase.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val item = dataSnapshot.getValue(DealClass::class.java)
+                    item?.let { dealList.add(it) }
                 }
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
                 dealAdapter.notifyDataSetChanged()
-                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
 
         })
+
+//        firebaseDealDatabase.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
+//                if (deal != null) {
+////                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+//                    dealList.add(deal)
+//                    dealAdapter.notifyItemInserted(dealList.size)
+//                }
+//            }
+//
+//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                dealAdapter.notifyDataSetChanged()
+//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+//            }
+//
+//        })
 
     }
 

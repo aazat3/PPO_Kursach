@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
@@ -75,8 +74,26 @@ class DealInfoFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.deals_decoration).setOnClickListener{
-            val action = DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal.idDeal)
+            val action = DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal)
             view.findNavController().navigate(action)
+        }
+
+        view.findViewById<Button>(R.id.complete_deal).setOnClickListener{
+            val model = DealClass(
+                deal.idDeal,
+                idUser.text.toString().toInt(),
+                date.text.toString(),
+                address.text.toString(),
+                client.text.toString(),
+                clientNumber.text.toString(),
+                price.text.toString().toInt(),
+                difficulty.text.toString().toInt(),
+                status.text.toString().toInt())
+            setFragmentResult(
+                "request_key",
+                bundleOf("complete_key" to model)
+            )
+            view.findNavController().navigateUp()
         }
         return view
     }

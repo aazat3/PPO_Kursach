@@ -3,9 +3,11 @@ package com.example.ppo_kursach
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.ppo_kursach.databinding.DealsDecorationItemBinding
+import com.google.firebase.storage.FirebaseStorage
 
-class DealsDecorationAdapter(private var dealsDecorationList: List<DealsDecorationClass>): RecyclerView.Adapter<DealsDecorationAdapter.DealsDecorationViewHolder>() {
+class DealsDecorationAdapter(private var dealsDecorationList: List<DecorationClass>): RecyclerView.Adapter<DealsDecorationAdapter.DealsDecorationViewHolder>() {
     private var onClickListener: OnClickListener? = null
 
     class DealsDecorationViewHolder(val binding: DealsDecorationItemBinding): RecyclerView.ViewHolder(binding.root)
@@ -28,13 +30,20 @@ class DealsDecorationAdapter(private var dealsDecorationList: List<DealsDecorati
 
         val item = dealsDecorationList[position]
         with(holder.binding){
-            idDealsDecoration.text = item.idDealsDecoration.toString()
-            idDeal.text = item.idDeal.toString()
-            idDecoration.text = item.idDecoration.toString()
-            quantity.text = item.quantity.toString()
+            id.text = item.idDecoration.toString()
+            name.text = item.name
+            type.text = item.type.toString()
             price.text = item.price.toString()
-
+            quantity.text = item.quantity.toString()
+            val storage = FirebaseStorage.getInstance().getReference("Decoration")
+            if (item.photo != ""){
+                val gsReference = storage.child(item.photo)
+                Glide.with(photo.context)
+                    .load(gsReference)
+                    .into(photo)
+            }
         }
+
         holder.itemView.setOnClickListener {
             if (onClickListener != null) {
                 onClickListener!!.onClick(position, item )
@@ -43,7 +52,7 @@ class DealsDecorationAdapter(private var dealsDecorationList: List<DealsDecorati
     }
 
     interface OnClickListener {
-        fun onClick(position: Int, model: DealsDecorationClass)
+        fun onClick(position: Int, model: DecorationClass)
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {

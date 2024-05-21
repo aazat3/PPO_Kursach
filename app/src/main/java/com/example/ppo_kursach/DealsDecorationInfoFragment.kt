@@ -1,12 +1,6 @@
 package com.example.ppo_kursach
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
@@ -23,19 +15,20 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 
-class DecorationInfoFragment : Fragment() {
-    private val args: DecorationInfoFragmentArgs by navArgs()
+class DealsDecorationInfoFragment : Fragment() {
+    private val args: DealsDecorationInfoFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val decoration = args.decoration
-        val view = inflater.inflate(R.layout.fragment_decoration_info, container, false)
+        val view = inflater.inflate(R.layout.fragment_deals_decoration_info, container, false)
         val idDecoration = view.findViewById<TextView>(R.id.id_decoration)
         val name = view.findViewById<TextView>(R.id.name)
         val type = view.findViewById<TextView>(R.id.type)
@@ -92,70 +85,15 @@ class DecorationInfoFragment : Fragment() {
             )
             view.findNavController().navigateUp()
         }
-
-
-
-        var imagePickerActivityResult: ActivityResultLauncher<Intent> =
-            registerForActivityResult( ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result != null) {
-                    val imageUri: Uri? = result.data?.data
-                    val sd = getFileName(requireContext(), imageUri!!)
-                    val uploadTask = storage.child("$sd").putFile(imageUri)
-                    val deleteRef = storage.child(photoName)
-                    photoName = sd.toString()
-
-                    uploadTask.addOnSuccessListener {
-                        storage.child("$sd").downloadUrl.addOnSuccessListener {
-                            Glide.with(this)
-                                .load(it)
-                                .into(photo)
-                            deleteRef.delete().addOnSuccessListener {
-                                // File deleted successfully
-                            }.addOnFailureListener {
-                                Log.e("Firebase", "Failed in deleting")
-                            }
-                            Log.e("Firebase", "download passed")
-                        }.addOnFailureListener {
-                            Log.e("Firebase", "Failed in downloading")
-                        }
-                    }.addOnFailureListener {
-                        Log.e("Firebase", "Image Upload fail")
-                    }
-                }
-            }
-
-
-
-        view.findViewById<Button>(R.id.set_image).setOnClickListener{
-            val galleryIntent = Intent(Intent.ACTION_PICK)
-            galleryIntent.type = "image/*"
-            imagePickerActivityResult.launch(galleryIntent)
-
-        }
-
         return view
     }
-    @SuppressLint("Range")
-    fun getFileName(context: Context, uri: Uri): String? {
-        if (uri.scheme == "content") {
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            cursor.use {
-                if (cursor != null) {
-                    if(cursor.moveToFirst()) {
-                        return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                    }
-                }
-            }
-        }
-        return uri.path?.lastIndexOf('/')?.let { uri.path?.substring(it) }
-    }
-
 
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            DecorationInfoFragment().apply {
+            DealsDecorationInfoFragment().apply {
                 arguments = Bundle().apply {
+
                 }
             }
     }

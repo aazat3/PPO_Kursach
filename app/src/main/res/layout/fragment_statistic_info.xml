@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DealInfoFragment">
+    tools:context=".StatisticInfoFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/materialTextView"
@@ -34,7 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="id_user"
-            android:text="id_user" />
+            android:text="id_user"
+            android:clickable="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -164,28 +165,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/save_deal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Save"
-        app:layout_constraintEnd_toStartOf="@+id/delete_deal"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
-
-    <Button
-        android:id="@+id/delete_deal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/save_deal"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
-
-    <Button
         android:id="@+id/deals_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -193,18 +172,6 @@
         android:text="Decorations"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/complete_deal"
-        app:layout_constraintTop_toBottomOf="@+id/save_deal" />
-
-    <Button
-        android:id="@+id/complete_deal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Complete"
-        app:layout_constraintEnd_toStartOf="@+id/deals_decoration"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_deal" />
-
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
 </androidx.constraintlayout.widget.ConstraintLayout>
