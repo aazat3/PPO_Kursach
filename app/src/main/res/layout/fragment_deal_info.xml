@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DealInfoFragment">
+    tools:context=".deal_package.DealInfoFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/materialTextView"
@@ -163,6 +163,26 @@
             app:layout_constraintTop_toBottomOf="@+id/difficulty" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="comment"
+            android:text="comment"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:maxLines="3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/difficulty" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/save_deal"
         android:layout_width="wrap_content"
@@ -172,7 +192,7 @@
         app:layout_constraintEnd_toStartOf="@+id/delete_deal"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout12" />
 
     <Button
         android:id="@+id/delete_deal"
@@ -183,13 +203,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/save_deal"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout12" />
 
     <Button
         android:id="@+id/deals_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="Decorations"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -200,7 +220,7 @@
         android:id="@+id/complete_deal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="Complete"
         app:layout_constraintEnd_toStartOf="@+id/deals_decoration"
         app:layout_constraintHorizontal_bias="0.5"

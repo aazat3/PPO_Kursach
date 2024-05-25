@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.statistic_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.fragment.navArgs
+import com.example.ppo_kursach.R
+import com.example.ppo_kursach.statistic_package.StatisticFragmentArgs
 
 class StatisticInfoFragment : Fragment() {
 

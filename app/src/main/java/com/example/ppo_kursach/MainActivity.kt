@@ -46,7 +46,10 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.statisticFragment)
                     true
                 }
-
+                R.id.to_user -> {
+                    navController.navigate(R.id.userFragment)
+                    true
+                }
                 else -> {
                     true
                 }

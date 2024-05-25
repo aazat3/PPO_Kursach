@@ -1,6 +1,5 @@
 package com.example.ppo_kursach
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -9,9 +8,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.example.ppo_kursach.user_package.UserClass
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kotlin.properties.Delegates
 
 
 class AuthenticationFragment : Fragment() {
@@ -19,15 +27,20 @@ class AuthenticationFragment : Fragment() {
     lateinit var mAuth: FirebaseAuth
     lateinit var email: String
     lateinit var passord: String
+    private lateinit var firebaseUserDatabase: DatabaseReference
+    private lateinit var firebaseLastIdDatabase: DatabaseReference
+    var lastIdUser by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance()
+        firebaseUserDatabase = Firebase.database.getReference("UserClass")
+        firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdUser")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_authentication, container, false)
         view.findViewById<Button>(R.id.login_button).setOnClickListener{
@@ -36,6 +49,19 @@ class AuthenticationFragment : Fragment() {
         view.findViewById<Button>(R.id.register_button).setOnClickListener{
             registerNewUser(view)
         }
+
+        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val getLastIdUser: Int? = snapshot.getValue(Int::class.java)
+                if (getLastIdUser != null) {
+                    lastIdUser = getLastIdUser
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
+            }
+        })
+
         return view
     }
 
@@ -113,6 +139,14 @@ class AuthenticationFragment : Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
 
+                    val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
+                    val user = currentFirebaseUser?.let {
+                        UserClass(lastIdUser + 1, email, it.uid)
+                    }
+
+                    firebaseUserDatabase.child((lastIdUser + 1).toString()).setValue(user)
+                    firebaseLastIdDatabase.setValue(lastIdUser + 1)
+
                     view.findNavController().navigate(R.id.dealFragment)
 
                 } else {
@@ -125,12 +159,4 @@ class AuthenticationFragment : Fragment() {
             }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AuthenticationFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }

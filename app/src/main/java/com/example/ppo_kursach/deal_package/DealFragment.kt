@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.deal_package
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,15 +10,14 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ppo_kursach.R
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.util.EventListener
 import kotlin.properties.Delegates
 
 class DealFragment : Fragment(), View.OnClickListener {
@@ -58,7 +57,9 @@ class DealFragment : Fragment(), View.OnClickListener {
                 firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
             }
             if (returnedCompleteDeal != null) {
-                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(returnedCompleteDeal)
+                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(
+                    returnedCompleteDeal
+                )
                 view.findNavController().navigate(action)
                 firebaseDealDatabase.child(returnedCompleteDeal.idDeal.toString()).removeValue()
             }
@@ -124,50 +125,6 @@ class DealFragment : Fragment(), View.OnClickListener {
             }
 
         })
-
-//        firebaseDealDatabase.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
-//                if (deal != null) {
-////                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-//                    dealList.add(deal)
-//                    dealAdapter.notifyItemInserted(dealList.size)
-//                }
-//            }
-//
-//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildRemoved(snapshot: DataSnapshot) {
-//                dealAdapter.notifyDataSetChanged()
-//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
-//            }
-//
-//        })
-
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DealFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
-
-    private fun addDeal(deal: DealClass){
-        dealList.plusAssign(deal)
-        dealAdapter.notifyDataSetChanged()
     }
 
     override fun onClick(p0: View?) {

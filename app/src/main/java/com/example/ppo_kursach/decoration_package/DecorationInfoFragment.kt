@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.decoration_package
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -21,6 +21,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.example.ppo_kursach.decoration_package.DecorationInfoFragmentArgs
+import com.example.ppo_kursach.R
 import com.google.firebase.storage.FirebaseStorage
 
 class DecorationInfoFragment : Fragment() {

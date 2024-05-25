@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.statistic_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,13 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.firebase.database.ChildEventListener
+import com.example.ppo_kursach.R
+import com.example.ppo_kursach.statistic_package.StatisticFragmentArgs
+import com.example.ppo_kursach.statistic_package.StatisticFragmentDirections
+import com.example.ppo_kursach.deal_package.DealAdapter
+import com.example.ppo_kursach.deal_package.DealClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -20,7 +22,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.lang.reflect.InvocationTargetException
-import kotlin.math.log
 
 class StatisticFragment : Fragment() {
 
@@ -56,7 +57,8 @@ class StatisticFragment : Fragment() {
         dealAdapter.setOnClickListener(object :
             DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
-                val action = StatisticFragmentDirections.actionStatisticFragmentToStatisticInfoFragment(model)
+                val action =
+                    StatisticFragmentDirections.actionStatisticFragmentToStatisticInfoFragment(model)
                 navController.navigate(action)
             }
         })

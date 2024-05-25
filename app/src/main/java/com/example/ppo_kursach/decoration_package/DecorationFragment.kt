@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.decoration_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,15 +10,15 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ppo_kursach.decoration_package.DecorationFragmentDirections
+import com.example.ppo_kursach.R
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlin.properties.Delegates
@@ -76,7 +76,10 @@ class DecorationFragment : Fragment(), View.OnClickListener {
         decorationAdapter.setOnClickListener(object :
             DecorationAdapter.OnClickListener {
             override fun onClick(position: Int, model: DecorationClass) {
-                val action = DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
+                val action =
+                    DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(
+                        model
+                    )
                 navController.navigate(action)
             }
         })
@@ -85,7 +88,8 @@ class DecorationFragment : Fragment(), View.OnClickListener {
             when (it.itemId) {
                 R.id.new_deal -> {
                     val model = DecorationClass(idDecoration = lastIdDecoration + 1)
-                    val action = DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
+                    val action =
+                        DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
                     navController.navigate(action)
                     true
                 }

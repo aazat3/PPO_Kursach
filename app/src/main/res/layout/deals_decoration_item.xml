@@ -27,47 +27,114 @@
                 android:layout_height="110dp"
                 android:src="@drawable/ic_launcher_foreground"/>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="15dp"
                 android:orientation="vertical">
 
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="id_text, name_text, type_text, price_text"/>
+
                 <TextView
-                    android:id="@+id/id"
-                    android:layout_width="match_parent"
+                    android:id="@+id/id_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Id: "
+                    app:layout_constraintEnd_toStartOf="@+id/barrier"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/id_decoration"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="id"
-                    android:layout_weight="1"/>
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:id="@+id/name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Название: "
+                    app:layout_constraintEnd_toStartOf="@+id/barrier"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/id_text" />
 
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="name"
-                    android:layout_weight="1"/>
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@+id/id_decoration" />
+
+
+                <TextView
+                    android:id="@+id/type_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Тип: "
+                    app:layout_constraintEnd_toStartOf="@+id/barrier"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name_text" />
 
                 <TextView
                     android:id="@+id/type"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="type"
-                    android:layout_weight="1"/>
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@+id/name" />
+
+                <TextView
+                    android:id="@+id/price_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Цена: "
+                    app:layout_constraintEnd_toStartOf="@+id/barrier"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/type_text" />
 
                 <TextView
                     android:id="@+id/price"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="price"
-                    android:layout_weight="1"/>
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@+id/type" />
+
+                <TextView
+                    android:id="@+id/quantity_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Количечство: "
+                    app:layout_constraintEnd_toStartOf="@+id/barrier"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/price_text" />
+
                 <TextView
                     android:id="@+id/quantity"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="quantity"
-                    android:layout_weight="1"/>
+                    android:text="price"
+                    app:layout_constraintStart_toEndOf="@+id/barrier"
+                    app:layout_constraintTop_toBottomOf="@+id/price" />
 
-            </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

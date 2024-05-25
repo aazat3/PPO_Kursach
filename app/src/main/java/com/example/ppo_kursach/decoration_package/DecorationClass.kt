@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.decoration_package
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

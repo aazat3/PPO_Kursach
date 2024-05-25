@@ -1,9 +1,10 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.deals_decoration_package
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.example.ppo_kursach.databinding.DealsDecorationItemBinding
 import com.google.firebase.storage.FirebaseStorage
 
@@ -30,7 +31,7 @@ class DealsDecorationAdapter(private var dealsDecorationList: List<DecorationCla
 
         val item = dealsDecorationList[position]
         with(holder.binding){
-            id.text = item.idDecoration.toString()
+            idDecoration.text = item.idDecoration.toString()
             name.text = item.name
             type.text = item.type.toString()
             price.text = item.price.toString()

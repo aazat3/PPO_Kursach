@@ -1,11 +1,10 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.decoration_package
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.ppo_kursach.databinding.DecorationItemBinding
-import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.firebase.storage.FirebaseStorage
 
 
@@ -33,10 +32,11 @@ class DecorationAdapter(private var decorationList: List<DecorationClass>): Recy
 
         val item = decorationList[position]
         with(holder.binding){
-            id.text = item.idDecoration.toString()
+            idDecoration.text = item.idDecoration.toString()
             name.text = item.name
             type.text = item.type.toString()
             price.text = item.price.toString()
+            quantity.text = item.quantity.toString()
 
             val storage = FirebaseStorage.getInstance().getReference("Decoration")
             if (item.photo != ""){

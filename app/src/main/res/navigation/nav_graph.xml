@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/dealFragment"
-        android:name="com.example.ppo_kursach.DealFragment"
+        android:name="com.example.ppo_kursach.deal_package.DealFragment"
         android:label="fragment_deal"
         tools:layout="@layout/fragment_deal" >
         <action
@@ -22,27 +22,33 @@
         <action
             android:id="@+id/action_dealFragment_to_statisticFragment"
             app:destination="@id/statisticFragment" />
+        <action
+            android:id="@+id/action_dealFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/dealInfoFragment"
-        android:name="com.example.ppo_kursach.DealInfoFragment"
+        android:name="com.example.ppo_kursach.deal_package.DealInfoFragment"
         android:label="fragment_deal_info"
         tools:layout="@layout/fragment_deal_info" >
         <argument
             android:name="deal"
-            app:argType="com.example.ppo_kursach.DealClass" />
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
         <action
             android:id="@+id/action_dealInfoFragment_to_dealFragment"
             app:destination="@id/dealFragment" />
         <action
             android:id="@+id/action_dealInfoFragment_to_dealsDecorationFragment"
             app:destination="@id/dealsDecorationFragment" />
+        <action
+            android:id="@+id/action_dealInfoFragment_to_dealsUserFragment"
+            app:destination="@id/dealsUserFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/decorationFragment"
-        android:name="com.example.ppo_kursach.DecorationFragment"
+        android:name="com.example.ppo_kursach.decoration_package.DecorationFragment"
         android:label="decorationFragment" >
         <action
             android:id="@+id/action_decorationFragment_to_dealFragment"
@@ -53,11 +59,14 @@
         <action
             android:id="@+id/action_decorationFragment_to_statisticFragment"
             app:destination="@id/statisticFragment" />
+        <action
+            android:id="@+id/action_decorationFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/decorationInfoFragment"
-        android:name="com.example.ppo_kursach.DecorationInfoFragment"
+        android:name="com.example.ppo_kursach.decoration_package.DecorationInfoFragment"
         android:label="fragment_decoration_info"
         tools:layout="@layout/fragment_decoration_info" >
         <action
@@ -65,16 +74,16 @@
             app:destination="@id/decorationFragment" />
         <argument
             android:name="decoration"
-            app:argType="com.example.ppo_kursach.DecorationClass" />
+            app:argType="com.example.ppo_kursach.decoration_package.DecorationClass" />
     </fragment>
     <fragment
         android:id="@+id/dealsDecorationFragment"
-        android:name="com.example.ppo_kursach.DealsDecorationFragment"
+        android:name="com.example.ppo_kursach.deals_decoration_package.DealsDecorationFragment"
         android:label="fragment_deals_decoration"
         tools:layout="@layout/fragment_deals_decoration" >
         <argument
             android:name="deal"
-            app:argType="com.example.ppo_kursach.DealClass" />
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
         <action
             android:id="@+id/action_dealsDecorationFragment_to_dealsDecorationInfoFragment"
             app:destination="@id/dealsDecorationInfoFragment" />
@@ -84,12 +93,12 @@
     </fragment>
     <fragment
         android:id="@+id/dealsDecorationInfoFragment"
-        android:name="com.example.ppo_kursach.DealsDecorationInfoFragment"
+        android:name="com.example.ppo_kursach.deals_decoration_package.DealsDecorationInfoFragment"
         android:label="fragment_deals_decoration_info"
         tools:layout="@layout/fragment_deals_decoration_info" >
         <argument
             android:name="decoration"
-            app:argType="com.example.ppo_kursach.DecorationClass" />
+            app:argType="com.example.ppo_kursach.decoration_package.DecorationClass" />
     </fragment>
     <fragment
         android:id="@+id/authenticationFragment"
@@ -102,7 +111,7 @@
     </fragment>
     <fragment
         android:id="@+id/statisticFragment"
-        android:name="com.example.ppo_kursach.StatisticFragment"
+        android:name="com.example.ppo_kursach.statistic_package.StatisticFragment"
         android:label="fragment_statistic"
         tools:layout="@layout/fragment_statistic" >
         <action
@@ -116,36 +125,78 @@
             app:destination="@id/statisticInfoFragment" />
         <argument
             android:name="deal"
-            app:argType="com.example.ppo_kursach.DealClass"/>
+            app:argType="com.example.ppo_kursach.deal_package.DealClass"/>
+        <action
+            android:id="@+id/action_statisticFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
     <fragment
         android:id="@+id/statisticInfoFragment"
-        android:name="com.example.ppo_kursach.StatisticInfoFragment"
+        android:name="com.example.ppo_kursach.statistic_package.StatisticInfoFragment"
         android:label="fragment_statistic_info"
         tools:layout="@layout/fragment_statistic_info" >
         <argument
             android:name="deal"
-            app:argType="com.example.ppo_kursach.DealClass" />
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
     </fragment>
     <fragment
         android:id="@+id/dealsDecorationAddFragment"
-        android:name="com.example.ppo_kursach.DealsDecorationAddFragment"
+        android:name="com.example.ppo_kursach.deals_decoration_package.DealsDecorationAddFragment"
         android:label="fragment_deals_decoration_add"
         tools:layout="@layout/fragment_deals_decoration_add" >
         <argument
             android:name="deal"
-            app:argType="com.example.ppo_kursach.DealClass" />
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
         <action
             android:id="@+id/action_dealsDecorationAddFragment_to_dealsDecorationAddInfoFragment"
             app:destination="@id/dealsDecorationAddInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/dealsDecorationAddInfoFragment"
-        android:name="com.example.ppo_kursach.DealsDecorationAddInfoFragment"
+        android:name="com.example.ppo_kursach.deals_decoration_package.DealsDecorationAddInfoFragment"
         android:label="fragment_deals_decoration_add_info"
         tools:layout="@layout/fragment_deals_decoration_add_info" >
         <argument
             android:name="decoration"
-            app:argType="com.example.ppo_kursach.DecorationClass" />
+            app:argType="com.example.ppo_kursach.decoration_package.DecorationClass" />
+    </fragment>
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.ppo_kursach.user_package.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" >
+        <action
+            android:id="@+id/action_userFragment_to_statisticFragment"
+            app:destination="@id/statisticFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_decorationFragment"
+            app:destination="@id/decorationFragment" />
+        <action
+            android:id="@+id/action_userFragment_to_usersDealFragment"
+            app:destination="@id/usersDealFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/usersDealFragment"
+        android:name="com.example.ppo_kursach.users_deal_package.UsersDealFragment"
+        android:label="fragment_users_deal"
+        tools:layout="@layout/fragment_users_deal" >
+        <argument
+            android:name="user"
+            app:argType="com.example.ppo_kursach.user_package.UserClass" />
+        <action
+            android:id="@+id/action_usersDealFragment_to_dealInfoFragment"
+            app:destination="@id/dealInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dealsUserFragment"
+        android:name="com.example.ppo_kursach.users_deal_package.DealsUserFragment"
+        android:label="fragment_deals_user"
+        tools:layout="@layout/fragment_deals_user" >
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
     </fragment>
 </navigation>

@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.deal_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.ppo_kursach.R
 
 class DealInfoFragment : Fragment() {
 
@@ -35,6 +36,7 @@ class DealInfoFragment : Fragment() {
         val price = view.findViewById<TextView>(R.id.price)
         val difficulty = view.findViewById<TextView>(R.id.difficulty)
         val status = view.findViewById<TextView>(R.id.status)
+        val comment = view.findViewById<TextView>(R.id.comment)
 
         idDeal.text = deal.idDeal.toString()
         idUser.text = deal.idUser.toString()
@@ -45,6 +47,7 @@ class DealInfoFragment : Fragment() {
         price.text = deal.price.toString()
         difficulty.text = deal.difficulty.toString()
         status.text = deal.status.toString()
+        comment.text = deal.comment
 
         view.findViewById<Button>(R.id.save_deal).setOnClickListener{
             val model = DealClass(
@@ -56,7 +59,9 @@ class DealInfoFragment : Fragment() {
                 clientNumber.text.toString(),
                 price.text.toString().toInt(),
                 difficulty.text.toString().toInt(),
-                status.text.toString().toInt())
+                status.text.toString().toInt(),
+                comment.text.toString()
+            )
             setFragmentResult(
                 "request_key",
                 bundleOf("save_key" to model)
@@ -74,7 +79,8 @@ class DealInfoFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.deals_decoration).setOnClickListener{
-            val action = DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal)
+            val action =
+                DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal)
             view.findNavController().navigate(action)
         }
 
@@ -88,7 +94,9 @@ class DealInfoFragment : Fragment() {
                 clientNumber.text.toString(),
                 price.text.toString().toInt(),
                 difficulty.text.toString().toInt(),
-                status.text.toString().toInt())
+                status.text.toString().toInt(),
+                comment.text.toString()
+            )
             setFragmentResult(
                 "request_key",
                 bundleOf("complete_key" to model)

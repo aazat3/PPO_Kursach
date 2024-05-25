@@ -1,4 +1,4 @@
-package com.example.ppo_kursach
+package com.example.ppo_kursach.deals_decoration_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,15 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ppo_kursach.decoration_package.DecorationClass
+import com.example.ppo_kursach.R
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -92,7 +91,10 @@ class DealsDecorationFragment : Fragment() {
         dealsDecorationAdapter.setOnClickListener(object :
             DealsDecorationAdapter.OnClickListener {
             override fun onClick(position: Int, model: DecorationClass) {
-                val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationInfoFragment(model)
+                val action =
+                    DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationInfoFragment(
+                        model
+                    )
                 navController.navigate(action)
             }
         })
@@ -102,8 +104,14 @@ class DealsDecorationFragment : Fragment() {
                 R.id.new_deal -> {
 //                    val model = DealsDecorationClass(idDealsDecoration = lastIdDealsDecoration + 1)
 //                    val model = DealClass(idDealsDecoration = lastIdDealsDecoration + 1)
-                    val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationAddFragment(deal)
-                    navController.navigate(action)
+                    if (deal.date != ""){
+                        val action =
+                            DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationAddFragment(deal)
+                        navController.navigate(action)
+                    } else{
+                        Toast.makeText(context, "Please set data for deal", Toast.LENGTH_SHORT).show()
+                    }
+
                     true
                 }
                 R.id.search -> {
@@ -130,7 +138,7 @@ class DealsDecorationFragment : Fragment() {
                 for (dataSnapshot in snapshot.children) {
                     val dealsDecoration = dataSnapshot.getValue(DealsDecorationClass::class.java)
                     if (dealsDecoration != null) {
-                        if(dealsDecoration.idDeal == deal.idDeal)
+                        if(dealsDecoration.idDeal == deal.idDeal && deal.date != "")
                             firebaseDecorationDatabase.addValueEventListener(object :ValueEventListener{
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     for (dataSnapshot2 in snapshot.children) {
