@@ -3,9 +3,13 @@ package com.example.ppo_kursach
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.RecoverySystem
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.view.MenuProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -30,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.gfgNavigation_host_gfgFragment) as NavHostFragment
         val navController = navHostFragment.navController
-        firebaseDatabase = Firebase.database.reference
 
         findViewById<BottomNavigationView>(R.id.bottomNav).setOnItemSelectedListener {
             when (it.itemId) {

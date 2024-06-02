@@ -3,9 +3,15 @@ package com.example.ppo_kursach.deals_decoration_package
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -15,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.example.ppo_kursach.R
+import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.deal_package.DealFragmentDirections
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -38,35 +46,36 @@ class DealsDecorationAddFragment : Fragment() {
         firebaseDealsDecorationDatabase = Firebase.database.getReference("DealsDecorationClass")
         firebaseDecorationDatabase = Firebase.database.getReference("DecorationClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDealsDecoration")
-
-
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.fragment_deals_decoration_add, container, false)
+        val view = inflater.inflate(R.layout.fragment_deals_decoration_add, container, false)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setFragmentResultListener("deals_decoration_add_key") { key, bundle ->
-            val returnedAddDecoration = bundle.getParcelable<DecorationClass>("add_decoration_key")
-            if (returnedAddDecoration != null) {
-                Toast.makeText(context, "NNNN", Toast.LENGTH_SHORT).show()
+            val returnedAddDealsDecoration = bundle.getParcelable<DecorationClass>("add_decoration_key")
+            if (returnedAddDealsDecoration != null) {
 
                 val model = DecorationClass(
-                    returnedAddDecoration.idDecoration,
-                    returnedAddDecoration.name,
-                    returnedAddDecoration.type,
-                    returnedAddDecoration.quantity,
-                    returnedAddDecoration.condition,
-                    returnedAddDecoration.price,
-                    returnedAddDecoration.difficultyInst,
-                    returnedAddDecoration.difficultyTr,
-                    returnedAddDecoration.photo)
+                    returnedAddDealsDecoration.idDecoration,
+                    returnedAddDealsDecoration.name,
+                    returnedAddDealsDecoration.type,
+                    returnedAddDealsDecoration.quantity,
+                    returnedAddDealsDecoration.condition,
+                    returnedAddDealsDecoration.price,
+                    returnedAddDealsDecoration.difficultyInst,
+                    returnedAddDealsDecoration.difficultyTr,
+                    returnedAddDealsDecoration.photo)
                 setFragmentResult(
                     "deals_decoration_key",
                     bundleOf("add_deals_decoration_key" to model)
@@ -97,21 +106,6 @@ class DealsDecorationAddFragment : Fragment() {
                 navController.navigate(action)
             }
         })
-
-//        view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
-//            when (it.itemId) {
-//                R.id.new_deal -> {
-//                    val model = DealsDecorationClass(idDealsDecoration = lastIdDealsDecoration + 1)
-//                    val action = DealsDecorationFragmentDirections.actionDealsDecorationFragmentToDealsDecorationAddFragment()
-//                    navController.navigate(action)
-//                    true
-//                }
-//                R.id.search -> {
-//                    true
-//                }
-//                else -> false
-//            }
-//        }
 
         firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -164,5 +158,43 @@ class DealsDecorationAddFragment : Fragment() {
             }
 
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.toolbar_menu_4, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(msg: String): Boolean {
+                filter(msg)
+                return false
+            }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun filter(text: String) {
+        val filteredList: ArrayList<DecorationClass> = ArrayList()
+
+        for (item in dealsDecorationList) {
+            if (item.name.lowercase().contains(text.lowercase()) || item.type.toString().lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+        if (filteredList.isEmpty()) {
+            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
+        } else {
+            dealsDecorationAdapter.filterList(filteredList)
+        }
     }
 }

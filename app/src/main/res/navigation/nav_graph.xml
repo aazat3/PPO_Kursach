@@ -198,5 +198,17 @@
         <argument
             android:name="deal"
             app:argType="com.example.ppo_kursach.deal_package.DealClass" />
+        <action
+            android:id="@+id/action_dealsUserFragment_to_dealsUserAddFragment"
+            app:destination="@id/dealsUserAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dealsUserAddFragment"
+        android:name="com.example.ppo_kursach.users_deal_package.DealsUserAddFragment"
+        android:label="fragment_deals_user_add"
+        tools:layout="@layout/fragment_deals_user_add" >
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
     </fragment>
 </navigation>

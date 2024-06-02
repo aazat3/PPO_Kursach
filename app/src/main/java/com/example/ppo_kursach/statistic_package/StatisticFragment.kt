@@ -3,9 +3,15 @@ package com.example.ppo_kursach.statistic_package
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +21,7 @@ import com.example.ppo_kursach.statistic_package.StatisticFragmentArgs
 import com.example.ppo_kursach.statistic_package.StatisticFragmentDirections
 import com.example.ppo_kursach.deal_package.DealAdapter
 import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.deal_package.DealFragmentDirections
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -33,7 +40,17 @@ class StatisticFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseStatisticDatabase = Firebase.database.getReference("StatisticClass")
+        setHasOptionsMenu(true)
+    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_statistic, container, false)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,54 +92,44 @@ class StatisticFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
-
         })
-
-//        firebaseStatisticDatabase.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                val deal: DealClass? = snapshot.getValue(DealClass::class.java)
-//                if (deal != null) {
-//                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-//                    dealList.add(deal)
-//                    dealAdapter.notifyItemInserted(dealList.size)
-//                }
-//            }
-//
-//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, "changed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildRemoved(snapshot: DataSnapshot) {
-//                dealAdapter.notifyDataSetChanged()
-//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
-//            }
-//
-//        })
-
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_statistic, container, false)
-    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StatisticFragment().apply {
-                arguments = Bundle().apply {
-
-                }
+        inflater.inflate(R.menu.toolbar_menu_4, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
             }
+
+            override fun onQueryTextChange(msg: String): Boolean {
+                filter(msg)
+                return false
+            }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun filter(text: String) {
+        val filteredList: ArrayList<DealClass> = ArrayList()
+
+        for (item in dealList) {
+            if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || item.idUser.toString().lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+        if (filteredList.isEmpty()) {
+            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
+        } else {
+            dealAdapter.filterList(filteredList)
+        }
     }
 }

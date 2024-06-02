@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.ppo_kursach.R
+import com.google.android.material.appbar.MaterialToolbar
 
 class DealInfoFragment : Fragment() {
 
@@ -78,11 +79,6 @@ class DealInfoFragment : Fragment() {
             view.findNavController().navigateUp()
         }
 
-        view.findViewById<Button>(R.id.deals_decoration).setOnClickListener{
-            val action =
-                DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal)
-            view.findNavController().navigate(action)
-        }
 
         view.findViewById<Button>(R.id.complete_deal).setOnClickListener{
             val model = DealClass(
@@ -103,15 +99,24 @@ class DealInfoFragment : Fragment() {
             )
             view.findNavController().navigateUp()
         }
-        return view
-    }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DealInfoFragment().apply {
-                arguments = Bundle().apply {
+        view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.deals_decoration -> {
+                    val action =
+                        DealInfoFragmentDirections.actionDealInfoFragmentToDealsDecorationFragment(deal)
+                    view.findNavController().navigate(action)
+                    true
                 }
+                R.id.deals_user -> {
+                    val action =
+                        DealInfoFragmentDirections.actionDealInfoFragmentToDealsUserFragment(deal)
+                    view.findNavController().navigate(action)
+                    true
+                }
+                else -> false
             }
+        }
+        return view
     }
 }

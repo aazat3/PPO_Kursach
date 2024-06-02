@@ -101,7 +101,7 @@ class DealsDecorationFragment : Fragment() {
 
         view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.new_deal -> {
+                R.id.add_new -> {
 //                    val model = DealsDecorationClass(idDealsDecoration = lastIdDealsDecoration + 1)
 //                    val model = DealClass(idDealsDecoration = lastIdDealsDecoration + 1)
                     if (deal.date != ""){
@@ -112,9 +112,6 @@ class DealsDecorationFragment : Fragment() {
                         Toast.makeText(context, "Please set data for deal", Toast.LENGTH_SHORT).show()
                     }
 
-                    true
-                }
-                R.id.search -> {
                     true
                 }
                 else -> false

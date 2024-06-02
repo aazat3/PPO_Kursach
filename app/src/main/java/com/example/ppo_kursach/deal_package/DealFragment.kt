@@ -2,11 +2,20 @@ package com.example.ppo_kursach.deal_package
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +29,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.properties.Delegates
 
-class DealFragment : Fragment(), View.OnClickListener {
+class DealFragment : Fragment(){
 
     private lateinit var firebaseDealDatabase: DatabaseReference
     private lateinit var firebaseLastIdDatabase: DatabaseReference
@@ -34,7 +43,7 @@ class DealFragment : Fragment(), View.OnClickListener {
         firebaseDealDatabase = Firebase.database.getReference("DealClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDeal")
 
-
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -64,6 +73,10 @@ class DealFragment : Fragment(), View.OnClickListener {
                 firebaseDealDatabase.child(returnedCompleteDeal.idDeal.toString()).removeValue()
             }
         }
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,7 +84,7 @@ class DealFragment : Fragment(), View.OnClickListener {
 
         val navController = view.findNavController()
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
-        dealList= arrayListOf()
+        dealList = arrayListOf()
         dealAdapter = DealAdapter(dealList)
         dealRecyclerView.layoutManager = LinearLayoutManager(context)
         dealRecyclerView.adapter = dealAdapter
@@ -84,21 +97,6 @@ class DealFragment : Fragment(), View.OnClickListener {
             }
         })
 
-        view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.new_deal -> {
-                    val model = DealClass(idDeal = lastIdDeal + 1)
-                    val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
-                    navController.navigate(action)
-                    true
-                }
-                R.id.search -> {
-                    true
-                }
-                else -> false
-            }
-        }
-
         firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val getLastIdDeal: Int? = snapshot.getValue(Int::class.java)
@@ -106,12 +104,13 @@ class DealFragment : Fragment(), View.OnClickListener {
                     lastIdDeal = getLastIdDeal
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
             }
         })
 
-        firebaseDealDatabase.addValueEventListener(object :ValueEventListener{
+        firebaseDealDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
                     val item = dataSnapshot.getValue(DealClass::class.java)
@@ -127,11 +126,51 @@ class DealFragment : Fragment(), View.OnClickListener {
         })
     }
 
-    override fun onClick(p0: View?) {
-        if (p0 != null) {
-            when(p0.id){
-//                R.id.add_deal -> addDeal(DealClass(date = "1", address = "1", ))
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.toolbar_menu, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
             }
+
+            override fun onQueryTextChange(msg: String): Boolean {
+                filter(msg)
+                return false
+            }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+                R.id.add_new -> {
+                    val model = DealClass(idDeal = lastIdDeal + 1)
+                    val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
+                    view?.findNavController()?.navigate(action)
+                    true
+                }
+
+                else -> false
+            }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun filter(text: String) {
+        val filteredList: ArrayList<DealClass> = ArrayList()
+
+        for (item in dealList) {
+            if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || item.idUser.toString().lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+        if (filteredList.isEmpty()) {
+            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
+        } else {
+            dealAdapter.filterList(filteredList)
         }
     }
 

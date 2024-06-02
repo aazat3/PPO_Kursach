@@ -6,10 +6,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.example.ppo_kursach.databinding.DealsDecorationItemBinding
+import com.example.ppo_kursach.deal_package.DealClass
 import com.google.firebase.storage.FirebaseStorage
 
 class DealsDecorationAdapter(private var dealsDecorationList: List<DecorationClass>): RecyclerView.Adapter<DealsDecorationAdapter.DealsDecorationViewHolder>() {
     private var onClickListener: OnClickListener? = null
+
+    fun filterList(filterList: ArrayList<DecorationClass>) {
+        dealsDecorationList = filterList
+        notifyDataSetChanged()
+    }
 
     class DealsDecorationViewHolder(val binding: DealsDecorationItemBinding): RecyclerView.ViewHolder(binding.root)
 

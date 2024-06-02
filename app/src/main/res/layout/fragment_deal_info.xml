@@ -6,13 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".deal_package.DealInfoFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:menu="@menu/deal_info_toolbar_menu"
+            app:title="@string/app_name" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/materialTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="id_deal: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout5" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/id_deal"
@@ -20,7 +40,7 @@
         android:layout_height="wrap_content"
         android:text="id_deal"
         app:layout_constraintStart_toEndOf="@+id/materialTextView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout5" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout4"
@@ -175,10 +195,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="comment"
-            android:text="comment"
             android:inputType="textMultiLine"
-            android:minLines="3"
             android:maxLines="3"
+            android:minLines="3"
+            android:text="comment"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/difficulty" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -187,44 +207,31 @@
         android:id="@+id/save_deal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Save"
-        app:layout_constraintEnd_toStartOf="@+id/delete_deal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/complete_deal"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout12" />
 
     <Button
         android:id="@+id/delete_deal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Delete"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/complete_deal"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/save_deal"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout12" />
 
-    <Button
-        android:id="@+id/deals_decoration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Decorations"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/complete_deal"
-        app:layout_constraintTop_toBottomOf="@+id/save_deal" />
 
     <Button
         android:id="@+id/complete_deal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Complete"
-        app:layout_constraintEnd_toStartOf="@+id/deals_decoration"
+        app:layout_constraintEnd_toStartOf="@+id/save_deal"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_deal" />
+        app:layout_constraintStart_toEndOf="@+id/delete_deal"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout12" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

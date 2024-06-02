@@ -8,6 +8,11 @@ import com.example.ppo_kursach.databinding.DealItemBinding
 class DealAdapter(private var dealList: List<DealClass>): RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
     private var onClickListener: OnClickListener? = null
 
+    fun filterList(filterList: ArrayList<DealClass>) {
+        dealList = filterList
+        notifyDataSetChanged()
+    }
+
     class DealViewHolder(val binding: DealItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DealViewHolder {

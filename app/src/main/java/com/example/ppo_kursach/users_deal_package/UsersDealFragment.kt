@@ -81,7 +81,6 @@ class UsersDealFragment : Fragment() {
                                 for (dataSnapshot2 in snapshot.children) {
                                     val usersDeal = dataSnapshot2.getValue(
                                         UsersDealClass::class.java)
-                                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
                                     if (usersDeal != null) {
                                         if (usersDeal.idUser == user.idUser && usersDeal.idDeal == deal.idDeal) {
                                             usersDealList.add(deal)

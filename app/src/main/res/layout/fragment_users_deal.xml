@@ -19,7 +19,7 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            app:menu="@menu/toolbar_menu"
+            app:menu="@menu/toolbar_menu_4"
             app:title="@string/app_name"/>
 
     </com.google.android.material.appbar.AppBarLayout>

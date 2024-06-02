@@ -3,15 +3,23 @@ package com.example.ppo_kursach.decoration_package
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.decoration_package.DecorationFragmentDirections
 import com.example.ppo_kursach.R
+import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.deal_package.DealFragmentDirections
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,7 +31,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlin.properties.Delegates
 
-class DecorationFragment : Fragment(), View.OnClickListener {
+class DecorationFragment : Fragment() {
 
     private lateinit var firebaseDecorationDatabase: DatabaseReference
     private lateinit var firebaseLastIdDatabase: DatabaseReference
@@ -52,6 +60,7 @@ class DecorationFragment : Fragment(), View.OnClickListener {
                 firebaseDecorationDatabase.child(returnedDeleteDecoration.idDecoration.toString()).removeValue()
             }
         }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -60,6 +69,8 @@ class DecorationFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_decoration, container, false)
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
         return view
     }
 
@@ -83,22 +94,6 @@ class DecorationFragment : Fragment(), View.OnClickListener {
                 navController.navigate(action)
             }
         })
-
-        view.findViewById<MaterialToolbar>(R.id.toolbar).setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.new_deal -> {
-                    val model = DecorationClass(idDecoration = lastIdDecoration + 1)
-                    val action =
-                        DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
-                    navController.navigate(action)
-                    true
-                }
-                R.id.search -> {
-                    true
-                }
-                else -> false
-            }
-        }
 
         firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -124,59 +119,55 @@ class DecorationFragment : Fragment(), View.OnClickListener {
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
-
         })
-
-//        firebaseDecorationDatabase.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                val decoration: DecorationClass? = snapshot.getValue(DecorationClass::class.java)
-//                if (decoration != null) {
-//                    Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
-//                    decorationList.add(decoration)
-//                    decorationAdapter.notifyDataSetChanged()
-//
-//                }
-//            }
-//
-//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, snapshot.key, Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildRemoved(snapshot: DataSnapshot) {
-//                decorationAdapter.notifyDataSetChanged()
-//                Toast.makeText(context, "removed", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-//                Toast.makeText(context, "moved", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
-//            }
-//        })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DecorationFragment().apply {
-                arguments = Bundle().apply {
-                }
+        inflater.inflate(R.menu.toolbar_menu, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
             }
-    }
 
-    private fun addDecoration(decoration: DecorationClass){
-        decorationList.plusAssign(decoration)
-        decorationAdapter.notifyDataSetChanged()
-    }
-
-    override fun onClick(p0: View?) {
-        if (p0 != null) {
-            when(p0.id){
-//                R.id.add_decoration -> addDecoration(decorationClass(date = "1", address = "1", ))
+            override fun onQueryTextChange(msg: String): Boolean {
+                filter(msg)
+                return false
             }
+        })
+        super.onCreateOptionsMenu(menu, inflater)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.add_new -> {
+                val model = DecorationClass(idDecoration = lastIdDecoration + 1)
+                val action =
+                    DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(model)
+                view?.findNavController()?.navigate(action)
+                true
+            }
+
+            else -> false
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun filter(text: String) {
+        val filteredList: ArrayList<DecorationClass> = ArrayList()
+
+        for (item in decorationList) {
+            if (item.name.lowercase().contains(text.lowercase()) || item.type.toString().lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
+        if (filteredList.isEmpty()) {
+            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
+        } else {
+            decorationAdapter.filterList(filteredList)
         }
     }
 
