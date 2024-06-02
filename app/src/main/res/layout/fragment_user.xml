@@ -85,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Save"
+        android:text="Сохранить"
         app:layout_constraintEnd_toStartOf="@+id/users_deal"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,31 +96,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="My Deals"
+        android:text="Мои сделки"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/save_user"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout8" />
 
-    <Button
-        android:id="@+id/deals_decoration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Decorations"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/complete_deal"
-        app:layout_constraintTop_toBottomOf="@+id/save_user" />
 
-    <Button
-        android:id="@+id/complete_deal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Complete"
-        app:layout_constraintEnd_toStartOf="@+id/deals_decoration"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_user" />
 </androidx.constraintlayout.widget.ConstraintLayout>

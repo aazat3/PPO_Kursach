@@ -56,6 +56,7 @@ class DecorationInfoFragment : Fragment() {
         price.text = decoration.price.toString()
         difficultyInst.text = decoration.difficultyInst.toString()
         difficultyTr.text = decoration.difficultyTr.toString()
+
         var photoName = ""
         val storage = FirebaseStorage.getInstance().getReference("Decoration")
         if (decoration.photo != ""){
@@ -64,8 +65,7 @@ class DecorationInfoFragment : Fragment() {
             Glide.with(photo.context)
                 .load(gsReference)
                 .into(photo)
-        }else { photoName = ""}
-
+        } else { photoName = ""}
 
 
         view.findViewById<Button>(R.id.save_decoration).setOnClickListener{
@@ -94,8 +94,6 @@ class DecorationInfoFragment : Fragment() {
             )
             view.findNavController().navigateUp()
         }
-
-
 
         var imagePickerActivityResult: ActivityResultLauncher<Intent> =
             registerForActivityResult( ActivityResultContracts.StartActivityForResult()) { result ->
@@ -127,7 +125,6 @@ class DecorationInfoFragment : Fragment() {
             }
 
 
-
         view.findViewById<Button>(R.id.set_image).setOnClickListener{
             val galleryIntent = Intent(Intent.ACTION_PICK)
             galleryIntent.type = "image/*"
@@ -137,6 +134,7 @@ class DecorationInfoFragment : Fragment() {
 
         return view
     }
+
     @SuppressLint("Range")
     fun getFileName(context: Context, uri: Uri): String? {
         if (uri.scheme == "content") {
@@ -150,15 +148,5 @@ class DecorationInfoFragment : Fragment() {
             }
         }
         return uri.path?.lastIndexOf('/')?.let { uri.path?.substring(it) }
-    }
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DecorationInfoFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

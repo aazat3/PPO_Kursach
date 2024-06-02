@@ -9,24 +9,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
 import com.example.ppo_kursach.deal_package.DealClass
-import com.example.ppo_kursach.deal_package.DealFragmentDirections
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationAdapter
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationAddFragmentDirections
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationClass
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationFragmentArgs
-import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.example.ppo_kursach.user_package.UserClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -45,14 +39,26 @@ class DealsUserAddFragment : Fragment() {
     lateinit var dealsUserAdapter: DealsUserAdapter
     var lastIdDealsUser by Delegates.notNull<Int>()
     private val args: DealsUserAddFragmentArgs by navArgs()
+    private lateinit var deal: DealClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseDealsUserDatabase = Firebase.database.getReference("UsersDealClass")
         firebaseUserDatabase = Firebase.database.getReference("UserClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdUsersDeal")
+        deal = args.deal
 
         setHasOptionsMenu(true)
+
+        dealsUserList= arrayListOf()
+        dealsUserAdapter = DealsUserAdapter(dealsUserList)
+        firebaseUserDatabaseUpdate()
+        firebaseLastIdDatabase.get().addOnSuccessListener{
+            val getLastIdDealsUser: Int? = it.getValue(Int::class.java)
+            if (getLastIdDealsUser != null) {
+                lastIdDealsUser = getLastIdDealsUser
+            }
+        }
     }
 
     override fun onCreateView(
@@ -69,74 +75,26 @@ class DealsUserAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val deal = args.deal
-
-        val navController = view.findNavController()
         val dealsUserRecyclerView = view.findViewById<RecyclerView>(R.id.deals_user_recycler_view)
-        dealsUserList= arrayListOf()
-        dealsUserAdapter = DealsUserAdapter(dealsUserList)
         dealsUserRecyclerView.layoutManager = LinearLayoutManager(context)
         dealsUserRecyclerView.adapter = dealsUserAdapter
 
         dealsUserAdapter.setOnClickListener(object :
             DealsUserAdapter.OnClickListener {
             override fun onClick(position: Int, model: UserClass) {
-
-
-                setFragmentResult(
-                    "deals_user_key",
-                    bundleOf("add_deals_user_key" to model)
-                )
-
-                navController.navigateUp()            }
-        })
-
-        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val getLastIdDealsUser: Int? = snapshot.getValue(Int::class.java)
-                if (getLastIdDealsUser != null) {
-                    lastIdDealsUser = getLastIdDealsUser
+                val dialogBuilder = context!!.let { AlertDialog.Builder(it) }
+                dialogBuilder.setTitle("Добавить")
+                dialogBuilder.setPositiveButton("Добавить") { dialog, whichButton ->
+                    setFragmentResult(
+                        "deals_user_key",
+                        bundleOf("add_deals_user_key" to model)
+                    )
+                    view.findNavController().navigateUp()
                 }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        firebaseUserDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val user = dataSnapshot.getValue(UserClass::class.java)
-                    var flag = false
-                    if (user != null) {
-                        firebaseDealsUserDatabase.addValueEventListener(object :
-                            ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                for (dataSnapshot2 in snapshot.children) {
-                                    val dealsUser = dataSnapshot2.getValue(
-                                        UsersDealClass::class.java)
-                                    if (dealsUser != null) {
-                                        if (dealsUser.idUser == user.idUser && dealsUser.idDeal == deal.idDeal) {
-                                            flag = true
-                                        }
-                                    }
-                                }
-                                if (!flag) {
-                                    dealsUserList.add(user)
-                                    dealsUserAdapter.notifyDataSetChanged()
-                                }
-                            }
-                            override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-                            }
-
-                        })
-                    }
+                dialogBuilder.setNeutralButton("Отмена") { dialog, whichButton ->
+                    dialog.cancel()
                 }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+                dialogBuilder.show()
             }
         })
     }
@@ -176,6 +134,33 @@ class DealsUserAddFragment : Fragment() {
             Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
         } else {
             dealsUserAdapter.filterList(filteredList)
+        }
+    }
+
+    fun firebaseUserDatabaseUpdate(){
+        dealsUserList.clear()
+        firebaseUserDatabase.get().addOnSuccessListener{
+            for (dataSnapshot in it.children) {
+                val user = dataSnapshot.getValue(UserClass::class.java)
+                var flag = false
+                if (user != null) {
+                    firebaseDealsUserDatabase.get().addOnSuccessListener{
+                        for (dataSnapshot2 in it.children) {
+                            val dealsUser = dataSnapshot2.getValue(
+                                UsersDealClass::class.java)
+                            if (dealsUser != null) {
+                                if (dealsUser.idUser == user.idUser && dealsUser.idDeal == deal.idDeal) {
+                                    flag = true
+                                }
+                            }
+                        }
+                        if (!flag) {
+                            dealsUserList.add(user)
+                            dealsUserAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
         }
     }
 }

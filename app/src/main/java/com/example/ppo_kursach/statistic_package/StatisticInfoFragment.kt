@@ -16,7 +16,6 @@ class StatisticInfoFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -48,12 +47,4 @@ class StatisticInfoFragment : Fragment() {
         return view
     }
 
-    companion object {
-        fun newInstance(param1: String, param2: String) =
-            StatisticInfoFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
-    }
 }

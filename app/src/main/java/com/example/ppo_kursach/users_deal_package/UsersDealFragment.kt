@@ -12,12 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
 import com.example.ppo_kursach.deal_package.DealClass
-import com.example.ppo_kursach.deal_package.DealFragmentDirections
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationAdapter
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationAddFragmentDirections
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationClass
-import com.example.ppo_kursach.deals_decoration_package.DealsDecorationFragmentArgs
-import com.example.ppo_kursach.decoration_package.DecorationClass
+import com.example.ppo_kursach.user_package.UserClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -34,12 +29,20 @@ class UsersDealFragment : Fragment() {
     lateinit var usersDealAdapter: UsersDealAdapter
 //    var lastIdDealsDecoration by Delegates.notNull<Int>()
     private val args: UsersDealFragmentArgs by navArgs()
+    lateinit var user: UserClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseUsersDealDatabase = Firebase.database.getReference("UsersDealClass")
         firebaseDealDatabase = Firebase.database.getReference("DealClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdUsersDeal")
+        user = args.user
+
+        usersDealList= arrayListOf()
+        usersDealAdapter = UsersDealAdapter(usersDealList)
+
+        firebaseDealDatabaseUpdate()
+
     }
 
     override fun onCreateView(
@@ -47,17 +50,12 @@ class UsersDealFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_users_deal, container, false)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val user = args.user
         val usersDealRecyclerView = view.findViewById<RecyclerView>(R.id.users_deal_recycler_view)
-
-        usersDealList= arrayListOf()
-        usersDealAdapter = UsersDealAdapter(usersDealList)
         usersDealRecyclerView.layoutManager = LinearLayoutManager(context)
         usersDealRecyclerView.adapter = usersDealAdapter
 
@@ -69,39 +67,27 @@ class UsersDealFragment : Fragment() {
                 view.findNavController().navigate(action)
             }
         })
+    }
 
-        firebaseDealDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val deal = dataSnapshot.getValue(DealClass::class.java)
-                    if (deal != null) {
-                        firebaseUsersDealDatabase.addValueEventListener(object :
-                            ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                for (dataSnapshot2 in snapshot.children) {
-                                    val usersDeal = dataSnapshot2.getValue(
-                                        UsersDealClass::class.java)
-                                    if (usersDeal != null) {
-                                        if (usersDeal.idUser == user.idUser && usersDeal.idDeal == deal.idDeal) {
-                                            usersDealList.add(deal)
-                                        }
-                                    }
+    private fun firebaseDealDatabaseUpdate(){
+        firebaseDealDatabase.get().addOnSuccessListener {
+            for (dataSnapshot in it.children) {
+                val deal = dataSnapshot.getValue(DealClass::class.java)
+                if (deal != null) {
+                    firebaseUsersDealDatabase.get().addOnSuccessListener {
+                        for (dataSnapshot2 in it.children) {
+                            val usersDeal = dataSnapshot2.getValue(
+                                UsersDealClass::class.java)
+                            if (usersDeal != null) {
+                                if (usersDeal.idUser == user.idUser && usersDeal.idDeal == deal.idDeal) {
+                                    usersDealList.add(deal)
                                 }
-                                usersDealAdapter.notifyDataSetChanged()
                             }
-                            override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-                            }
-
-                        })
+                        }
+                        usersDealAdapter.notifyDataSetChanged()
                     }
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-            }
-        })
+        }
     }
-
 }

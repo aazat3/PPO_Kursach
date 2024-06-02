@@ -20,6 +20,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
+import com.example.ppo_kursach.deals_decoration_package.DealsDecorationClass
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -33,6 +34,7 @@ class DealFragment : Fragment(){
 
     private lateinit var firebaseDealDatabase: DatabaseReference
     private lateinit var firebaseLastIdDatabase: DatabaseReference
+    private lateinit var firebaseDealDatabaseListener: ValueEventListener
     lateinit var dealList: ArrayList<DealClass>
     lateinit var dealAdapter: DealAdapter
     var lastIdDeal by Delegates.notNull<Int>()
@@ -44,36 +46,68 @@ class DealFragment : Fragment(){
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDeal")
 
         setHasOptionsMenu(true)
+
+        dealList = arrayListOf()
+        dealAdapter = DealAdapter(dealList)
+
+        setFragmentResultListener("request_key") { key, bundle ->
+            val returnedSaveDeal = bundle.getParcelable<DealClass>("save_key")
+            val returnedDeleteDeal = bundle.getParcelable<DealClass>("delete_key")
+            val returnedCompleteDeal = bundle.getParcelable<DealClass>("complete_key")
+
+            if (returnedSaveDeal != null) {
+                if(lastIdDeal <= returnedSaveDeal.idDeal)
+                    lastIdDeal = returnedSaveDeal.idDeal
+                    firebaseLastIdDatabase.setValue(returnedSaveDeal.idDeal)
+                firebaseDealDatabase.child(returnedSaveDeal.idDeal.toString()).setValue(returnedSaveDeal)
+            }
+
+            if (returnedDeleteDeal != null) {
+                firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
+                val firebaseDealsDecorationDatabase = Firebase.database.getReference("DealsDecorationClass")
+                firebaseDealsDecorationDatabase.get().addOnSuccessListener{
+                    for (dataSnapshot in it.children) {
+                        val item = dataSnapshot.getValue(DealsDecorationClass::class.java)
+                        if (item!!.idDeal == returnedDeleteDeal.idDeal){
+                            firebaseDealsDecorationDatabase.child(item.idDealsDecoration.toString()).removeValue()
+                        }
+                    }
+                }
+            }
+
+            if (returnedCompleteDeal != null) {
+                Firebase.database.getReference("StatisticClass").child(returnedCompleteDeal.idDeal.toString()).setValue(returnedCompleteDeal)
+                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(
+                    returnedCompleteDeal
+                )
+                view?.findNavController()?.navigate(action)
+            }
+
+            firebaseDealDatabaseUpdate()
+            firebaseLastIdDatabase.get().addOnSuccessListener {
+                val getLastIdDeal: Int? = it.getValue(Int::class.java)
+                if (getLastIdDeal != null) {
+                    lastIdDeal = getLastIdDeal
+                }
+            }
+
+        }
+
+        firebaseDealDatabaseUpdate()
+        firebaseLastIdDatabase.get().addOnSuccessListener {
+            val getLastIdDeal: Int? = it.getValue(Int::class.java)
+            if (getLastIdDeal != null) {
+                lastIdDeal = getLastIdDeal
+            }
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_deal, container, false)
-        setFragmentResultListener("request_key") { key, bundle ->
-            val returnedSaveDeal = bundle.getParcelable<DealClass>("save_key")
-            val returnedDeleteDeal = bundle.getParcelable<DealClass>("delete_key")
-            val returnedCompleteDeal = bundle.getParcelable<DealClass>("complete_key")
-
-//            val returnedSaveDeal = bundle.getParcelable("extra_key", DealClass::class.java)
-            if (returnedSaveDeal != null) {
-                if(lastIdDeal <= returnedSaveDeal.idDeal)
-                    firebaseLastIdDatabase.setValue(returnedSaveDeal.idDeal)
-                firebaseDealDatabase.child(returnedSaveDeal.idDeal.toString()).setValue(returnedSaveDeal)
-            }
-            if (returnedDeleteDeal != null) {
-                firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
-            }
-            if (returnedCompleteDeal != null) {
-                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(
-                    returnedCompleteDeal
-                )
-                view.findNavController().navigate(action)
-                firebaseDealDatabase.child(returnedCompleteDeal.idDeal.toString()).removeValue()
-            }
-        }
-
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
@@ -82,10 +116,7 @@ class DealFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navController = view.findNavController()
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
-        dealList = arrayListOf()
-        dealAdapter = DealAdapter(dealList)
         dealRecyclerView.layoutManager = LinearLayoutManager(context)
         dealRecyclerView.adapter = dealAdapter
 
@@ -93,36 +124,8 @@ class DealFragment : Fragment(){
             DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
                 val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
-                navController.navigate(action)
+                view.findNavController().navigate(action)
             }
-        })
-
-        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val getLastIdDeal: Int? = snapshot.getValue(Int::class.java)
-                if (getLastIdDeal != null) {
-                    lastIdDeal = getLastIdDeal
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        firebaseDealDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val item = dataSnapshot.getValue(DealClass::class.java)
-                    item?.let { dealList.add(it) }
-                }
-                dealAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-            }
-
         })
     }
 
@@ -171,6 +174,17 @@ class DealFragment : Fragment(){
             Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
         } else {
             dealAdapter.filterList(filteredList)
+        }
+    }
+
+    private fun firebaseDealDatabaseUpdate(){
+        firebaseDealDatabase.get().addOnSuccessListener {
+            dealList.clear()
+            for (dataSnapshot in it.children) {
+                val item = dataSnapshot.getValue(DealClass::class.java)
+                item?.let { dealList.add(it) }
+            }
+            dealAdapter.notifyDataSetChanged()
         }
     }
 

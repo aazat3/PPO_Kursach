@@ -1,11 +1,15 @@
 package com.example.ppo_kursach.users_deal_package
 
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -34,14 +38,46 @@ class DealsUserFragment : Fragment() {
     private lateinit var firebaseDealsUserDatabase: DatabaseReference
     lateinit var dealsUserList: ArrayList<UserClass>
     lateinit var dealsUserAdapter: DealsUserAdapter
+    lateinit var idDealsUserList: ArrayList<Int>
     var lastIdDealsUser by Delegates.notNull<Int>()
     private val args: DealsUserFragmentArgs by navArgs()
+    lateinit var deal: DealClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseUserDatabase = Firebase.database.getReference("UserClass")
         firebaseDealsUserDatabase = Firebase.database.getReference("UsersDealClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdUsersDeal")
+
+        deal = args.deal
+        idDealsUserList= arrayListOf()
+        dealsUserList= arrayListOf()
+        dealsUserAdapter = DealsUserAdapter(dealsUserList)
+
+        setFragmentResultListener("deals_user_key") { key, bundle ->
+            val returnedAddUser = bundle.getParcelable<UserClass>("add_deals_user_key")
+            if (returnedAddUser != null) {
+                val returnedAddDealsUser= UsersDealClass(lastIdDealsUser + 1, returnedAddUser.idUser, args.deal.idDeal)
+                if(lastIdDealsUser <= returnedAddDealsUser.idUsersDeal)
+                    firebaseLastIdDatabase.setValue(returnedAddDealsUser.idUsersDeal)
+                firebaseDealsUserDatabase.child(returnedAddDealsUser.idUsersDeal.toString()).setValue(returnedAddDealsUser)
+            }
+            firebaseUserDatabaseUpdate()
+            firebaseLastIdDatabase.get().addOnSuccessListener {
+                val getLastIdDealsUser: Int? = it.getValue(Int::class.java)
+                if (getLastIdDealsUser != null) {
+                    lastIdDealsUser = getLastIdDealsUser
+                }
+            }
+        }
+
+        firebaseUserDatabaseUpdate()
+        firebaseLastIdDatabase.get().addOnSuccessListener {
+            val getLastIdDealsUser: Int? = it.getValue(Int::class.java)
+            if (getLastIdDealsUser != null) {
+                lastIdDealsUser = getLastIdDealsUser
+            }
+        }
     }
 
     override fun onCreateView(
@@ -54,75 +90,27 @@ class DealsUserFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setFragmentResultListener("deals_user_key") { key, bundle ->
-            val returnedAddUser = bundle.getParcelable<UserClass>("add_deals_user_key")
-            if (returnedAddUser != null) {
-                val returnedAddDealsUser= UsersDealClass(lastIdDealsUser + 1, returnedAddUser.idUser, args.deal.idDeal)
-                if(lastIdDealsUser <= returnedAddDealsUser.idUsersDeal)
-                    firebaseLastIdDatabase.setValue(returnedAddDealsUser.idUsersDeal)
-                firebaseDealsUserDatabase.child(returnedAddDealsUser.idUsersDeal.toString()).setValue(returnedAddDealsUser)
-            }
-        }
-
-        val deal = args.deal
         val dealsUserRecyclerView = view.findViewById<RecyclerView>(R.id.deals_user_recycler_view)
-
-        dealsUserList= arrayListOf()
-        dealsUserAdapter = DealsUserAdapter(dealsUserList)
         dealsUserRecyclerView.layoutManager = LinearLayoutManager(context)
         dealsUserRecyclerView.adapter = dealsUserAdapter
 
         dealsUserAdapter.setOnClickListener(object :
             DealsUserAdapter.OnClickListener {
             override fun onClick(position: Int, model: UserClass) {
-
-//                val action = DealsUserFragmentDirections.actionDealsUserFragmentToDealsUserAddFragment(model)
-//                view.findNavController().navigate(action)
-            }
-        })
-
-        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val getLastIdDealsUser: Int? = snapshot.getValue(Int::class.java)
-                if (getLastIdDealsUser != null) {
-                    lastIdDealsUser = getLastIdDealsUser
+                val dialogBuilder = context!!.let { AlertDialog.Builder(it) }
+                dialogBuilder.setTitle("Удалить")
+                dialogBuilder.setPositiveButton("Удалить") { dialog, whichButton ->
+                    firebaseDealsUserDatabase.child(idDealsUserList[position].toString()).removeValue()
+                    idDealsUserList.removeAt(position)
+                    dealsUserList.removeAt(position)
+                    dealsUserAdapter.notifyItemRemoved(position)
+                    dealsUserAdapter.notifyItemRangeChanged(position, dealsUserList.size)
+                    Toast.makeText(context, "Удалено", Toast.LENGTH_SHORT).show()
                 }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        firebaseUserDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val user = dataSnapshot.getValue(UserClass::class.java)
-                    if (user != null) {
-                        firebaseDealsUserDatabase.addValueEventListener(object :
-                            ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                for (dataSnapshot2 in snapshot.children) {
-                                    val dealsUser = dataSnapshot2.getValue(
-                                        UsersDealClass::class.java)
-                                    if (dealsUser != null) {
-                                        if (dealsUser.idUser == user.idUser && dealsUser.idDeal == deal.idDeal) {
-                                            dealsUserList.add(user)
-                                            dealsUserAdapter.notifyDataSetChanged()
-                                        }
-                                    }
-                                }
-                            }
-                            override fun onCancelled(error: DatabaseError) {
-                                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-                            }
-
-                        })
-                    }
+                dialogBuilder.setNeutralButton("Отмена") { dialog, whichButton ->
+                    dialog.cancel()
                 }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+                dialogBuilder.show()
             }
         })
 
@@ -140,6 +128,31 @@ class DealsUserFragment : Fragment() {
                 }
 
                 else -> false
+            }
+        }
+    }
+
+    private fun firebaseUserDatabaseUpdate(){
+        firebaseUserDatabase.get().addOnSuccessListener {
+            dealsUserList.clear()
+            idDealsUserList.clear()
+            for (dataSnapshot in it.children) {
+                val user = dataSnapshot.getValue(UserClass::class.java)
+                if (user != null) {
+                    firebaseDealsUserDatabase.get().addOnSuccessListener {
+                        for (dataSnapshot2 in it.children) {
+                            val dealsUser = dataSnapshot2.getValue(
+                                UsersDealClass::class.java)
+                            if (dealsUser != null) {
+                                if (dealsUser.idUser == user.idUser && dealsUser.idDeal == deal.idDeal) {
+                                    dealsUserList.add(user)
+                                    idDealsUserList.add(dealsUser.idUsersDeal)
+                                    dealsUserAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

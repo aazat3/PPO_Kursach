@@ -50,7 +50,6 @@ class DecorationFragment : Fragment() {
         setFragmentResultListener("request_key") { key, bundle ->
             val returnedSaveDecoration = bundle.getParcelable<DecorationClass>("save_key")
             val returnedDeleteDecoration = bundle.getParcelable<DecorationClass>("delete_key")
-//            val returnedSaveDecoration = bundle.getParcelable("extra_key", DecorationClass::class.java)
             if (returnedSaveDecoration != null) {
                 if(lastIdDecoration <= returnedSaveDecoration.idDecoration)
                     firebaseLastIdDatabase.setValue(returnedSaveDecoration.idDecoration)
@@ -59,8 +58,27 @@ class DecorationFragment : Fragment() {
             if (returnedDeleteDecoration != null) {
                 firebaseDecorationDatabase.child(returnedDeleteDecoration.idDecoration.toString()).removeValue()
             }
+
+            firebaseDecorationDatabaseUpdate()
+            firebaseLastIdDatabase.get().addOnSuccessListener {
+                val getLastIdDecoration: Int? = it.getValue(Int::class.java)
+                if (getLastIdDecoration != null) {
+                    lastIdDecoration = getLastIdDecoration
+                }
+            }
         }
         setHasOptionsMenu(true)
+
+        decorationList= arrayListOf()
+        decorationAdapter = DecorationAdapter(decorationList)
+
+        firebaseDecorationDatabaseUpdate()
+        firebaseLastIdDatabase.get().addOnSuccessListener {
+            val getLastIdDecoration: Int? = it.getValue(Int::class.java)
+            if (getLastIdDecoration != null) {
+                lastIdDecoration = getLastIdDecoration
+            }
+        }
     }
 
     override fun onCreateView(
@@ -77,10 +95,8 @@ class DecorationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navController = view.findNavController()
         val decorationRecyclerView = view.findViewById<RecyclerView>(R.id.decoration_recycler_view)
-        decorationList= arrayListOf()
-        decorationAdapter = DecorationAdapter(decorationList)
+
         decorationRecyclerView.layoutManager = LinearLayoutManager(context)
         decorationRecyclerView.adapter = decorationAdapter
 
@@ -91,33 +107,7 @@ class DecorationFragment : Fragment() {
                     DecorationFragmentDirections.actionDecorationFragmentToDecorationInfoFragment(
                         model
                     )
-                navController.navigate(action)
-            }
-        })
-
-        firebaseLastIdDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val getLastIdDecoration: Int? = snapshot.getValue(Int::class.java)
-                if (getLastIdDecoration != null) {
-                    lastIdDecoration = getLastIdDecoration
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Fail to get data.", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        firebaseDecorationDatabase.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val item = dataSnapshot.getValue(DecorationClass::class.java)
-                    item?.let { decorationList.add(it) }
-                }
-                decorationAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+                view.findNavController().navigate(action)
             }
         })
     }
@@ -171,4 +161,14 @@ class DecorationFragment : Fragment() {
         }
     }
 
+    private fun firebaseDecorationDatabaseUpdate(){
+        firebaseDecorationDatabase.get().addOnSuccessListener{
+            decorationList.clear()
+            for (dataSnapshot in it.children) {
+                val item = dataSnapshot.getValue(DecorationClass::class.java)
+                item?.let { decorationList.add(it) }
+            }
+            decorationAdapter.notifyDataSetChanged()
+        }
+    }
 }

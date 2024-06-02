@@ -22,6 +22,7 @@ import com.example.ppo_kursach.statistic_package.StatisticFragmentDirections
 import com.example.ppo_kursach.deal_package.DealAdapter
 import com.example.ppo_kursach.deal_package.DealClass
 import com.example.ppo_kursach.deal_package.DealFragmentDirections
+import com.example.ppo_kursach.deals_decoration_package.DealsDecorationFragmentArgs
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -35,12 +36,14 @@ class StatisticFragment : Fragment() {
     private lateinit var firebaseStatisticDatabase: DatabaseReference
     lateinit var dealList: ArrayList<DealClass>
     lateinit var dealAdapter: DealAdapter
-    private val args: StatisticFragmentArgs? by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseStatisticDatabase = Firebase.database.getReference("StatisticClass")
         setHasOptionsMenu(true)
+        dealList= arrayListOf()
+        dealAdapter = DealAdapter(dealList)
+        firebaseStatisticDatabaseUpdate()
     }
 
     override fun onCreateView(
@@ -55,19 +58,8 @@ class StatisticFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        try{
-            val deal = args?.deal
-            if(deal != null){
-                firebaseStatisticDatabase.child(deal.idDeal.toString()).setValue(deal)
-            }
-        } catch (e: InvocationTargetException){
-            null
-        }
 
-        val navController = view.findNavController()
         val dealRecyclerView = view.findViewById<RecyclerView>(R.id.deal_recycler_view)
-        dealList= arrayListOf()
-        dealAdapter = DealAdapter(dealList)
         dealRecyclerView.layoutManager = LinearLayoutManager(context)
         dealRecyclerView.adapter = dealAdapter
 
@@ -76,21 +68,7 @@ class StatisticFragment : Fragment() {
             override fun onClick(position: Int, model: DealClass) {
                 val action =
                     StatisticFragmentDirections.actionStatisticFragmentToStatisticInfoFragment(model)
-                navController.navigate(action)
-            }
-        })
-
-        firebaseStatisticDatabase.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    val item = dataSnapshot.getValue(DealClass::class.java)
-                    item?.let { dealList.add(it) }
-                }
-                dealAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+                view.findNavController().navigate(action)
             }
         })
     }
@@ -130,6 +108,16 @@ class StatisticFragment : Fragment() {
             Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
         } else {
             dealAdapter.filterList(filteredList)
+        }
+    }
+
+    private fun firebaseStatisticDatabaseUpdate(){
+        firebaseStatisticDatabase.get().addOnSuccessListener{
+            for (dataSnapshot in it.children) {
+                val item = dataSnapshot.getValue(DealClass::class.java)
+                item?.let { dealList.add(it) }
+            }
+            dealAdapter.notifyDataSetChanged()
         }
     }
 }

@@ -34,23 +34,21 @@ class UserFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-
         return inflater.inflate(R.layout.fragment_user, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var idUser = view.findViewById<TextView>(R.id.id_user)
-        var name = view.findViewById<EditText>(R.id.name)
-        var login = view.findViewById<EditText>(R.id.login)
-        var type = view.findViewById<EditText>(R.id.type)
-        var userNumber =  view.findViewById<EditText>(R.id.user_number)
+        val idUser = view.findViewById<TextView>(R.id.id_user)
+        val name = view.findViewById<EditText>(R.id.name)
+        val login = view.findViewById<EditText>(R.id.login)
+        val type = view.findViewById<EditText>(R.id.type)
+        val userNumber =  view.findViewById<EditText>(R.id.user_number)
         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser?.uid
 
-        firebaseUserDatabase.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
+        firebaseUserDatabase.get().addOnSuccessListener{
+                for (dataSnapshot in it.children) {
                     val item = dataSnapshot.getValue(UserClass::class.java)
 
                     if (item!!.uid == currentFirebaseUser!!.toString()){
@@ -62,13 +60,7 @@ class UserFragment : Fragment() {
                     }
 
                 }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-            }
-
-        })
+        }
 
         view.findViewById<Button>(R.id.save_user).setOnClickListener{
             val user = UserClass(idUser.text.toString().toInt(), name.text.toString(), currentFirebaseUser.toString(), type.text.toString(), login.text.toString(), userNumber.text.toString())
