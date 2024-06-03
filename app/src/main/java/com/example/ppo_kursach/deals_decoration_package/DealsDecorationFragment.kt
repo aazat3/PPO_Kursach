@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.example.ppo_kursach.R
 import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.decoration_package.DecorationAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -37,7 +38,7 @@ class DealsDecorationFragment : Fragment() {
     private lateinit var firebaseLastIdDatabase: DatabaseReference
     private lateinit var firebaseDecorationDatabase: DatabaseReference
     lateinit var dealsDecorationList: ArrayList<DecorationClass>
-    lateinit var dealsDecorationAdapter: DealsDecorationAdapter
+    lateinit var dealsDecorationAdapter: DecorationAdapter
     lateinit var idDealsDecorationList: ArrayList<Int>
     var lastIdDealsDecoration by Delegates.notNull<Int>()
     private val args: DealsDecorationFragmentArgs by navArgs()
@@ -49,15 +50,21 @@ class DealsDecorationFragment : Fragment() {
         firebaseDealsDecorationDatabase = Firebase.database.getReference("DealsDecorationClass")
         firebaseDecorationDatabase = Firebase.database.getReference("DecorationClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDealsDecoration")
-
+        firebaseLastIdDatabase.get().addOnSuccessListener{
+            val getLastIdDealsDecoration: Int? = it.getValue(Int::class.java)
+            if (getLastIdDealsDecoration != null) {
+                lastIdDealsDecoration = getLastIdDealsDecoration
+            }
+        }
         setFragmentResultListener("deals_decoration_key") { key, bundle ->
 
             val returnedAddDecoration = bundle.getParcelable<DecorationClass>("add_deals_decoration_key")
             if (returnedAddDecoration != null) {
                 val returnedAddDealsDecoration = DealsDecorationClass(lastIdDealsDecoration+1, args.deal.idDeal, returnedAddDecoration.idDecoration, returnedAddDecoration.quantity, returnedAddDecoration.price, args.deal.date)
-                if(lastIdDealsDecoration <= returnedAddDealsDecoration.idDealsDecoration)
+                if(lastIdDealsDecoration <= returnedAddDealsDecoration.idDealsDecoration){
                     lastIdDealsDecoration = returnedAddDealsDecoration.idDealsDecoration
                     firebaseLastIdDatabase.setValue(returnedAddDealsDecoration.idDealsDecoration)
+                }
                 firebaseDealsDecorationDatabase.child(returnedAddDealsDecoration.idDealsDecoration.toString()).setValue(returnedAddDealsDecoration)
                 Toast.makeText(context, "Добавлено", Toast.LENGTH_SHORT).show()
             }
@@ -73,14 +80,13 @@ class DealsDecorationFragment : Fragment() {
 
         dealsDecorationList = arrayListOf()
         idDealsDecorationList = arrayListOf()
-        dealsDecorationAdapter = DealsDecorationAdapter(dealsDecorationList)
+        dealsDecorationAdapter = DecorationAdapter(dealsDecorationList)
 
         firebaseDealsDecorationDatabaseUpdate()
         firebaseLastIdDatabase.get().addOnSuccessListener{
             val getLastIdDealsDecoration: Int? = it.getValue(Int::class.java)
             if (getLastIdDealsDecoration != null) {
                 lastIdDealsDecoration = getLastIdDealsDecoration
-                Toast.makeText(context, lastIdDealsDecoration.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -103,9 +109,8 @@ class DealsDecorationFragment : Fragment() {
         dealsDecorationRecyclerView.adapter = dealsDecorationAdapter
 
         dealsDecorationAdapter.setOnClickListener(object :
-            DealsDecorationAdapter.OnClickListener {
+            DecorationAdapter.OnClickListener {
             override fun onClick(position: Int, model: DecorationClass) {
-                Toast.makeText(context, position.toString(), Toast.LENGTH_SHORT).show()
                 val editText = EditText(context)
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
                 val layout = LinearLayout(context)

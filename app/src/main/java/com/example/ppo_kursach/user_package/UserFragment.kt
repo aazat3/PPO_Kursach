@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -39,13 +41,18 @@ class UserFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        var typeInt = 0
         val idUser = view.findViewById<TextView>(R.id.id_user)
         val name = view.findViewById<EditText>(R.id.name)
         val login = view.findViewById<EditText>(R.id.login)
-        val type = view.findViewById<EditText>(R.id.type)
+//        val type = view.findViewById<EditText>(R.id.type)
         val userNumber =  view.findViewById<EditText>(R.id.user_number)
         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser?.uid
+
+        val typeArray = resources.getStringArray(R.array.user_type_array)
+        var type = view.findViewById<AutoCompleteTextView>(R.id.type)
+
+
 
         firebaseUserDatabase.get().addOnSuccessListener{
                 for (dataSnapshot in it.children) {
@@ -55,20 +62,45 @@ class UserFragment : Fragment() {
                         idUser.text = item.idUser.toString()
                         name.setText(item.name)
                         login.setText(item.login)
-                        type.setText(item.type)
+//                        type.setText(item.type)
                         userNumber.setText(item.userNumber)
+
+                        typeInt = item.type
+                        type.setText(when(item.type){
+                            1 -> "Администратор"
+                            2 -> "Декоратор"
+                            3 -> "Монтажник"
+                            else -> ""
+                        })
+
+                        if (type != null) {
+                            var typeAdapter = ArrayAdapter(
+                                requireContext(),
+                                android.R.layout.simple_list_item_1, typeArray)
+                            type.setAdapter(typeAdapter)
+
+                            type.setOnItemClickListener { parent, view, position, id ->
+                                typeInt = when(typeArray[position]){
+                                    "Администратор" -> 1
+                                    "Декоратор" -> 2
+                                    "Монтажник" -> 3
+                                    else -> 0
+                                }
+                            }
+
+                        }
                     }
 
                 }
         }
 
         view.findViewById<Button>(R.id.save_user).setOnClickListener{
-            val user = UserClass(idUser.text.toString().toInt(), name.text.toString(), currentFirebaseUser.toString(), type.text.toString(), login.text.toString(), userNumber.text.toString())
+            val user = UserClass(idUser.text.toString().toInt(), name.text.toString(), currentFirebaseUser.toString(), typeInt, login.text.toString(), userNumber.text.toString())
             firebaseUserDatabase.child(user.idUser.toString()).setValue(user)
         }
 
         view.findViewById<Button>(R.id.users_deal).setOnClickListener{
-            val user = UserClass(idUser.text.toString().toInt(), name.text.toString(), currentFirebaseUser.toString(), type.text.toString(), login.text.toString(), userNumber.text.toString())
+            val user = UserClass(idUser.text.toString().toInt(), name.text.toString(), currentFirebaseUser.toString(), typeInt, login.text.toString(), userNumber.text.toString())
             val action = UserFragmentDirections.actionUserFragmentToUsersDealFragment(user)
             view.findNavController().navigate(action)
         }

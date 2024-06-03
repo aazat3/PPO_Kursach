@@ -19,6 +19,7 @@ data class DealClass(
 ): Parcelable {
     constructor() : this(0, 0, "", "", "", "", 0, 0, 0, "") {}
     constructor(idDeal: Int) : this(idDeal = idDeal, idUser = 0, date = "", address = "", client = "", clientNumber = "", price = 0, difficulty = 0, status = 0, comment = "") {}
+    constructor(idDeal: Int, idUser: Int) : this(idDeal = idDeal, idUser = idUser, date = "", address = "", client = "", clientNumber = "", price = 0, difficulty = 0, status = 0, comment = "") {}
 
 //    constructor(date:String, address:String) : this(0, date, address, "", "") {}
 

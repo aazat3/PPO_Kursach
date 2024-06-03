@@ -6,12 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
+import com.example.ppo_kursach.deal_package.DealAdapter
 import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.deal_package.DealFragmentDirections
+import com.example.ppo_kursach.deals_decoration_package.DealsDecorationClass
 import com.example.ppo_kursach.user_package.UserClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,11 +27,9 @@ import kotlin.properties.Delegates
 
 class UsersDealFragment : Fragment() {
     private lateinit var firebaseUsersDealDatabase: DatabaseReference
-    private lateinit var firebaseLastIdDatabase: DatabaseReference
     private lateinit var firebaseDealDatabase: DatabaseReference
     lateinit var usersDealList: ArrayList<DealClass>
-    lateinit var usersDealAdapter: UsersDealAdapter
-//    var lastIdDealsDecoration by Delegates.notNull<Int>()
+    lateinit var usersDealAdapter: DealAdapter
     private val args: UsersDealFragmentArgs by navArgs()
     lateinit var user: UserClass
 
@@ -35,14 +37,44 @@ class UsersDealFragment : Fragment() {
         super.onCreate(savedInstanceState)
         firebaseUsersDealDatabase = Firebase.database.getReference("UsersDealClass")
         firebaseDealDatabase = Firebase.database.getReference("DealClass")
-        firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdUsersDeal")
         user = args.user
 
         usersDealList= arrayListOf()
-        usersDealAdapter = UsersDealAdapter(usersDealList)
+        usersDealAdapter = DealAdapter(usersDealList)
+
+        setFragmentResultListener("request_key") { key, bundle ->
+            val returnedSaveDeal = bundle.getParcelable<DealClass>("save_key")
+            val returnedDeleteDeal = bundle.getParcelable<DealClass>("delete_key")
+            val returnedCompleteDeal = bundle.getParcelable<DealClass>("complete_key")
+
+            if (returnedSaveDeal != null) {
+                firebaseDealDatabase.child(returnedSaveDeal.idDeal.toString()).setValue(returnedSaveDeal)
+            }
+
+            if (returnedDeleteDeal != null) {
+                firebaseDealDatabase.child(returnedDeleteDeal.idDeal.toString()).removeValue()
+                val firebaseDealsDecorationDatabase = Firebase.database.getReference("DealsDecorationClass")
+                firebaseDealsDecorationDatabase.get().addOnSuccessListener{
+                    for (dataSnapshot in it.children) {
+                        val item = dataSnapshot.getValue(DealsDecorationClass::class.java)
+                        if (item!!.idDeal == returnedDeleteDeal.idDeal){
+                            firebaseDealsDecorationDatabase.child(item.idDealsDecoration.toString()).removeValue()
+                        }
+                    }
+                }
+            }
+
+            if (returnedCompleteDeal != null) {
+                Firebase.database.getReference("StatisticClass").child(returnedCompleteDeal.idDeal.toString()).setValue(returnedCompleteDeal)
+                val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(
+                    returnedCompleteDeal
+                )
+                view?.findNavController()?.navigate(action)
+            }
+            firebaseDealDatabaseUpdate()
+        }
 
         firebaseDealDatabaseUpdate()
-
     }
 
     override fun onCreateView(
@@ -60,7 +92,7 @@ class UsersDealFragment : Fragment() {
         usersDealRecyclerView.adapter = usersDealAdapter
 
         usersDealAdapter.setOnClickListener(object :
-            UsersDealAdapter.OnClickListener {
+            DealAdapter.OnClickListener {
             override fun onClick(position: Int, model: DealClass) {
 
                 val action = UsersDealFragmentDirections.actionUsersDealFragmentToDealInfoFragment(model)
@@ -70,6 +102,7 @@ class UsersDealFragment : Fragment() {
     }
 
     private fun firebaseDealDatabaseUpdate(){
+        usersDealList.clear()
         firebaseDealDatabase.get().addOnSuccessListener {
             for (dataSnapshot in it.children) {
                 val deal = dataSnapshot.getValue(DealClass::class.java)

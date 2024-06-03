@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
 import com.example.ppo_kursach.deal_package.DealClass
+import com.example.ppo_kursach.decoration_package.DecorationAdapter
 import com.example.ppo_kursach.decoration_package.DecorationClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -42,7 +43,7 @@ class DealsDecorationAddFragment : Fragment() {
     private lateinit var firebaseDealsDecorationDatabase: DatabaseReference
     private lateinit var firebaseDecorationDatabase: DatabaseReference
     lateinit var dealsDecorationList: ArrayList<DecorationClass>
-    lateinit var dealsDecorationAdapter: DealsDecorationAdapter
+    lateinit var dealsDecorationAdapter: DecorationAdapter
     private val args: DealsDecorationFragmentArgs by navArgs()
     lateinit var deal: DealClass
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +54,7 @@ class DealsDecorationAddFragment : Fragment() {
         deal = args.deal
 
         dealsDecorationList= arrayListOf()
-        dealsDecorationAdapter = DealsDecorationAdapter(dealsDecorationList)
+        dealsDecorationAdapter = DecorationAdapter(dealsDecorationList)
 
 
         firebaseDecorationDatabaseUpdate()
@@ -78,7 +79,7 @@ class DealsDecorationAddFragment : Fragment() {
         dealsDecorationRecyclerView.adapter = dealsDecorationAdapter
 
         dealsDecorationAdapter.setOnClickListener(object :
-            DealsDecorationAdapter.OnClickListener {
+            DecorationAdapter.OnClickListener {
             override fun onClick(position: Int, model: DecorationClass) {
                 val editText = EditText(context)
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
@@ -149,7 +150,13 @@ class DealsDecorationAddFragment : Fragment() {
         val filteredList: ArrayList<DecorationClass> = ArrayList()
 
         for (item in dealsDecorationList) {
-            if (item.name.lowercase().contains(text.lowercase()) || item.type.toString().lowercase().contains(text.lowercase())) {
+            val typeName = when(item.type){
+                1 ->  "Цветы"
+                2 ->  "Конструкции"
+                3 ->  "Прочее"
+                else -> ""
+            }
+            if (item.name.lowercase().contains(text.lowercase()) || typeName.lowercase().contains(text.lowercase())) {
                 filteredList.add(item)
             }
         }

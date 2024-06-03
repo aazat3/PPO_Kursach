@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -36,26 +38,130 @@ class DecorationInfoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
         val decoration = args.decoration
+        var typeInt = decoration.type
+        var conditionInt = decoration.condition
+        var difficultyInstInt = decoration.difficultyInst
+        var difficultyTrInt = decoration.difficultyTr
+
         val view = inflater.inflate(R.layout.fragment_decoration_info, container, false)
         val idDecoration = view.findViewById<TextView>(R.id.id_decoration)
         val name = view.findViewById<TextView>(R.id.name)
-        val type = view.findViewById<TextView>(R.id.type)
+//        val type = view.findViewById<TextView>(R.id.type)
         val quantity =  view.findViewById<TextView>(R.id.quantity)
-        val condition = view.findViewById<TextView>(R.id.condition)
+//        val condition = view.findViewById<TextView>(R.id.condition)
         val price = view.findViewById<TextView>(R.id.price)
-        val difficultyInst = view.findViewById<TextView>(R.id.difficultyInst)
-        val difficultyTr = view.findViewById<TextView>(R.id.difficultyTr)
+//        val difficultyInst = view.findViewById<TextView>(R.id.difficultyInst)
+//        val difficultyTr = view.findViewById<TextView>(R.id.difficultyTr)
         val photo = view.findViewById<ImageView>(R.id.photo)
+
+        val typeArray = resources.getStringArray(R.array.decor_type_array)
+        var type = view.findViewById<AutoCompleteTextView>(R.id.type)
+        type.setText(when(decoration.type){
+            1 -> "Цветы"
+            2 -> "Конструкции"
+            3 -> "Прочее"
+            else -> ""
+        })
+        if (type != null) {
+            var typeAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1, typeArray)
+            type.setAdapter(typeAdapter)
+            type.setOnItemClickListener { parent, view, position, id ->
+                typeInt = when(typeArray[position]){
+                    "Цветы" -> 1
+                    "Конструкции" -> 2
+                    "Прочее" -> 3
+                    else -> 0
+                }
+            }
+        }
+
+        val conditionArray = resources.getStringArray(R.array.condition_array)
+        var condition = view.findViewById<AutoCompleteTextView>(R.id.condition)
+        condition.setText(when(decoration.condition){
+            1 -> "Хорошее"
+            2 -> "Среднее"
+            3 -> "Плохое"
+            else -> ""
+        })
+        if (condition != null) {
+            var conditionAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1, conditionArray)
+            condition.setAdapter(conditionAdapter)
+            condition.setOnItemClickListener { parent, view, position, id ->
+                conditionInt = when(conditionArray[position]){
+                    "Хорошее" -> 1
+                    "Среднее" -> 2
+                    "Плохое" -> 3
+                    else -> 0
+                }
+            }
+        }
+
+        val difficultyInstArray = resources.getStringArray(R.array.difficulty_array)
+        var difficultyInst = view.findViewById<AutoCompleteTextView>(R.id.difficultyInst)
+        difficultyInst.setText(when(decoration.difficultyInst){
+            1 -> "Легко"
+            2 -> "Средне"
+            3 -> "Сложно"
+            4 -> "Очень сложно"
+            else -> ""
+        })
+        if (difficultyInst != null) {
+            var difficultyInstAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1, difficultyInstArray)
+            difficultyInst.setAdapter(difficultyInstAdapter)
+            difficultyInst.setOnItemClickListener { parent, view, position, id ->
+                difficultyInstInt = when(difficultyInstArray[position]){
+                    "Легко" -> 1
+                    "Средне" -> 2
+                    "Сложно" -> 3
+                    "Очень сложно" -> 4
+                    else -> 0
+                }
+            }
+        }
+
+        val difficultyTrArray = resources.getStringArray(R.array.difficulty_array)
+        var difficultyTr = view.findViewById<AutoCompleteTextView>(R.id.difficultyTr)
+        difficultyTr.setText(when(decoration.difficultyTr){
+            1 -> "Легко"
+            2 -> "Средне"
+            3 -> "Сложно"
+            4 -> "Очень сложно"
+            else -> ""
+        })
+        if (difficultyTr != null) {
+            var difficultyTrAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1, difficultyTrArray)
+            difficultyTr.setAdapter(difficultyTrAdapter)
+            difficultyTr.setOnItemClickListener { parent, view, position, id ->
+                difficultyTrInt = when(difficultyTrArray[position]){
+                    "Легко" -> 1
+                    "Средне" -> 2
+                    "Сложно" -> 3
+                    "Очень сложно" -> 4
+                    else -> 0
+                }
+            }
+        }
+
 
         idDecoration.text = decoration.idDecoration.toString()
         name.text = decoration.name.toString()
-        type.text = decoration.type.toString()
+//        type.text = decoration.type.toString()
         quantity.text = decoration.quantity.toString()
-        condition.text = decoration.condition.toString()
+//        condition.text = decoration.condition.toString()
         price.text = decoration.price.toString()
-        difficultyInst.text = decoration.difficultyInst.toString()
-        difficultyTr.text = decoration.difficultyTr.toString()
+//        difficultyInst.text = decoration.difficultyInst.toString()
+//        difficultyTr.text = decoration.difficultyTr.toString()
 
         var photoName = ""
         val storage = FirebaseStorage.getInstance().getReference("Decoration")
@@ -72,12 +178,12 @@ class DecorationInfoFragment : Fragment() {
             val model = DecorationClass(
                 decoration.idDecoration,
                 name.text.toString(),
-                type.text.toString().toInt(),
+                typeInt,
                 quantity.text.toString().toInt(),
-                condition.text.toString().toInt(),
+                conditionInt,
                 price.text.toString().toInt(),
-                difficultyInst.text.toString().toInt(),
-                difficultyTr.text.toString().toInt(),
+                difficultyInstInt,
+                difficultyTrInt,
                 photoName)
             setFragmentResult(
                 "request_key",

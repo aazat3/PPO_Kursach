@@ -3,12 +3,10 @@ package com.example.ppo_kursach.users_deal_package
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ppo_kursach.databinding.DealItemBinding
 import com.example.ppo_kursach.databinding.UserItemBinding
-import com.example.ppo_kursach.deal_package.DealClass
 import com.example.ppo_kursach.user_package.UserClass
 
-class DealsUserAdapter(private var dealsUserList: List<UserClass>): RecyclerView.Adapter<DealsUserAdapter.DealsUserViewHolder>() {
+class UserAdapter(private var dealsUserList: List<UserClass>): RecyclerView.Adapter<UserAdapter.DealsUserViewHolder>() {
     private var onClickListener: OnClickListener? = null
 
     fun filterList(filterList: ArrayList<UserClass>) {
@@ -38,7 +36,13 @@ class DealsUserAdapter(private var dealsUserList: List<UserClass>): RecyclerView
         with(holder.binding){
             idUser.text = item.idUser.toString()
             name.text = item.name
-            type.text = item.type
+            type.text = when(item.type){
+                1 -> "Администратор"
+                2 -> "Декоратор"
+                3 -> "Монтажник"
+                else -> ""
+            }
+//            type.text = item.type.toString()
             login.text = item.login
             userNumber.text = item.userNumber
         }

@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_dealInfoFragment_to_dealsUserFragment"
             app:destination="@id/dealsUserFragment" />
+        <action
+            android:id="@+id/action_dealInfoFragment_to_dealInfoUserChangeFragment"
+            app:destination="@id/dealInfoUserChangeFragment" />
     </fragment>
 
     <fragment
@@ -126,6 +129,9 @@
         <argument
             android:name="deal"
             app:argType="com.example.ppo_kursach.deal_package.DealClass" />
+        <action
+            android:id="@+id/action_statisticInfoFragment_to_statisticsDecorationFragment"
+            app:destination="@id/statisticsDecorationFragment" />
     </fragment>
     <fragment
         android:id="@+id/dealsDecorationAddFragment"
@@ -183,6 +189,24 @@
         android:name="com.example.ppo_kursach.users_deal_package.DealsUserAddFragment"
         android:label="fragment_deals_user_add"
         tools:layout="@layout/fragment_deals_user_add" >
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
+    </fragment>
+    <fragment
+        android:id="@+id/statisticsDecorationFragment"
+        android:name="com.example.ppo_kursach.statistic_package.StatisticsDecorationFragment"
+        android:label="fragment_statistics_decoration"
+        tools:layout="@layout/fragment_statistics_decoration" >
+        <argument
+            android:name="deal"
+            app:argType="com.example.ppo_kursach.deal_package.DealClass" />
+    </fragment>
+    <fragment
+        android:id="@+id/dealInfoUserChangeFragment"
+        android:name="com.example.ppo_kursach.deal_package.DealInfoUserChangeFragment"
+        android:label="fragment_deal_info_user_change"
+        tools:layout="@layout/fragment_deal_info_user_change" >
         <argument
             android:name="deal"
             app:argType="com.example.ppo_kursach.deal_package.DealClass" />

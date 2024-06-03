@@ -23,6 +23,7 @@ import com.example.ppo_kursach.deal_package.DealAdapter
 import com.example.ppo_kursach.deal_package.DealClass
 import com.example.ppo_kursach.deal_package.DealFragmentDirections
 import com.example.ppo_kursach.deals_decoration_package.DealsDecorationFragmentArgs
+import com.example.ppo_kursach.user_package.UserClass
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -100,14 +101,17 @@ class StatisticFragment : Fragment() {
         val filteredList: ArrayList<DealClass> = ArrayList()
 
         for (item in dealList) {
-            if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || item.idUser.toString().lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
-                filteredList.add(item)
+            var userName = ""
+            Firebase.database.getReference("UserClass").child(item.idUser.toString()).get().addOnSuccessListener{
+                userName = it.getValue(UserClass::class.java)?.name.toString()
+                if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || userName.lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
+                    filteredList.add(item)
+                }
+                if (filteredList.isEmpty()) {
+                } else {
+                    dealAdapter.filterList(filteredList)
+                }
             }
-        }
-        if (filteredList.isEmpty()) {
-            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
-        } else {
-            dealAdapter.filterList(filteredList)
         }
     }
 

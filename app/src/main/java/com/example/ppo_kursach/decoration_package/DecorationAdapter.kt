@@ -40,10 +40,15 @@ class DecorationAdapter(private var decorationList: List<DecorationClass>): Recy
         with(holder.binding){
             idDecoration.text = item.idDecoration.toString()
             name.text = item.name
-            type.text = item.type.toString()
+//            type.text = item.type.toString()
             price.text = item.price.toString()
             quantity.text = item.quantity.toString()
 
+            when(item.type){
+                1 ->  type.text = "Цветы"
+                2 ->  type.text = "Конструкции"
+                3 ->  type.text = "Прочее"
+            }
             val storage = FirebaseStorage.getInstance().getReference("Decoration")
             if (item.photo != ""){
                 val gsReference = storage.child(item.photo)

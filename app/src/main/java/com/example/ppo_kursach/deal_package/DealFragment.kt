@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
 import com.example.ppo_kursach.deals_decoration_package.DealsDecorationClass
+import com.example.ppo_kursach.user_package.UserClass
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -34,17 +36,22 @@ class DealFragment : Fragment(){
 
     private lateinit var firebaseDealDatabase: DatabaseReference
     private lateinit var firebaseLastIdDatabase: DatabaseReference
-    private lateinit var firebaseDealDatabaseListener: ValueEventListener
     lateinit var dealList: ArrayList<DealClass>
     lateinit var dealAdapter: DealAdapter
     var lastIdDeal by Delegates.notNull<Int>()
+    var idUser by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         firebaseDealDatabase = Firebase.database.getReference("DealClass")
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDeal")
-
+        firebaseLastIdDatabase.get().addOnSuccessListener {
+            val getLastIdDeal: Int? = it.getValue(Int::class.java)
+            if (getLastIdDeal != null) {
+                lastIdDeal = getLastIdDeal
+            }
+        }
         setHasOptionsMenu(true)
 
         dealList = arrayListOf()
@@ -56,9 +63,10 @@ class DealFragment : Fragment(){
             val returnedCompleteDeal = bundle.getParcelable<DealClass>("complete_key")
 
             if (returnedSaveDeal != null) {
-                if(lastIdDeal <= returnedSaveDeal.idDeal)
+                if(lastIdDeal <= returnedSaveDeal.idDeal){
                     lastIdDeal = returnedSaveDeal.idDeal
                     firebaseLastIdDatabase.setValue(returnedSaveDeal.idDeal)
+                }
                 firebaseDealDatabase.child(returnedSaveDeal.idDeal.toString()).setValue(returnedSaveDeal)
             }
 
@@ -144,21 +152,33 @@ class DealFragment : Fragment(){
                 return false
             }
         })
+
+        idUser = 0
+        Firebase.database.getReference("UserClass").get().addOnSuccessListener{
+            for (dataSnapshot in it.children) {
+                val item = dataSnapshot.getValue(UserClass::class.java)
+                if (item!!.uid == FirebaseAuth.getInstance().currentUser?.uid!!.toString()){
+                    idUser = item.idUser
+                }
+
+            }
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-                R.id.add_new -> {
-                    val model = DealClass(idDeal = lastIdDeal + 1)
-                    val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
-                    view?.findNavController()?.navigate(action)
-                    true
-                }
+            R.id.add_new -> {
 
-                else -> false
+                val model = DealClass(idDeal = lastIdDeal + 1, idUser = idUser)
+                val action = DealFragmentDirections.actionDealFragmentToDealInfoFragment(model)
+                view?.findNavController()?.navigate(action)
+                true
             }
+            else -> false
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -166,14 +186,17 @@ class DealFragment : Fragment(){
         val filteredList: ArrayList<DealClass> = ArrayList()
 
         for (item in dealList) {
-            if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || item.idUser.toString().lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
-                filteredList.add(item)
+            var userName = ""
+            Firebase.database.getReference("UserClass").child(item.idUser.toString()).get().addOnSuccessListener{
+                userName = it.getValue(UserClass::class.java)?.name.toString()
+                if (item.date.lowercase().contains(text.lowercase()) || item.address.lowercase().contains(text.lowercase()) || userName.lowercase().contains(text.lowercase()) || item.client.lowercase().contains(text.lowercase())) {
+                    filteredList.add(item)
+                }
+                if (filteredList.isEmpty()) {
+                } else {
+                    dealAdapter.filterList(filteredList)
+                }
             }
-        }
-        if (filteredList.isEmpty()) {
-            Toast.makeText(context, "No Data Found..", Toast.LENGTH_SHORT).show()
-        } else {
-            dealAdapter.filterList(filteredList)
         }
     }
 

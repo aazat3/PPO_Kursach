@@ -1,5 +1,37 @@
 <resources>
-    <string name="app_name">PPO_Kursach</string>
+    <string name="app_name">Decor Manager</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="difficulty_array">
+        <item>Легко</item>
+        <item>Средне</item>
+        <item>Сложно</item>
+        <item>Очень сложно</item>
+    </string-array>
+
+    <string-array name="decor_type_array">
+        <item>Цветы</item>
+        <item>Конструкции</item>
+        <item>Прочее</item>
+    </string-array>
+
+    <string-array name="status_array">
+        <item>Планируется</item>
+        <item>Заключена</item>
+        <item>Оплачена</item>
+        <item>Исполнена</item>
+    </string-array>
+
+    <string-array name="user_type_array">
+        <item>Администратор</item>
+        <item>Декоратор</item>
+        <item>Монтажник</item>
+    </string-array>
+
+    <string-array name="condition_array">
+        <item>Хорошее</item>
+        <item>Среднее</item>
+        <item>Плохое</item>
+    </string-array>
 </resources>

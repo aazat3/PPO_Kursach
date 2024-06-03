@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.databinding.DealItemBinding
+import com.example.ppo_kursach.user_package.UserClass
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class DealAdapter(private var dealList: List<DealClass>): RecyclerView.Adapter<DealAdapter.DealViewHolder>() {
     private var onClickListener: OnClickListener? = null
@@ -32,13 +35,20 @@ class DealAdapter(private var dealList: List<DealClass>): RecyclerView.Adapter<D
     override fun onBindViewHolder(holder: DealViewHolder, position: Int) {
 
         val item = dealList[position]
+        var userName = ""
+
         with(holder.binding){
             idDeal.text = item.idDeal.toString()
             date.text = item.date
             address.text = item.address
-            user.text = item.idUser.toString()
+//            user.text = item.idUser.toString()
             client.text = item.client
             price.text = item.price.toString()
+
+            Firebase.database.getReference("UserClass").child(item.idUser.toString()).get().addOnSuccessListener{
+                userName = it.getValue(UserClass::class.java)?.name.toString()
+                user.text = userName
+            }
 
         }
         holder.itemView.setOnClickListener {

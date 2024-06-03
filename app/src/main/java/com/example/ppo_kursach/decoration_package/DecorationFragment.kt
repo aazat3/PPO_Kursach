@@ -45,8 +45,13 @@ class DecorationFragment : Fragment() {
 
         firebaseDecorationDatabase = Firebase.database.getReference("DecorationClass")
         storage = Firebase.storage.getReference("Decoration")
-
         firebaseLastIdDatabase = Firebase.database.getReference("LastIdentifiers/lastIdDecoration")
+        firebaseLastIdDatabase.get().addOnSuccessListener {
+            val getLastIdDecoration: Int? = it.getValue(Int::class.java)
+            if (getLastIdDecoration != null) {
+                lastIdDecoration = getLastIdDecoration
+            }
+        }
         setFragmentResultListener("request_key") { key, bundle ->
             val returnedSaveDecoration = bundle.getParcelable<DecorationClass>("save_key")
             val returnedDeleteDecoration = bundle.getParcelable<DecorationClass>("delete_key")
@@ -150,7 +155,13 @@ class DecorationFragment : Fragment() {
         val filteredList: ArrayList<DecorationClass> = ArrayList()
 
         for (item in decorationList) {
-            if (item.name.lowercase().contains(text.lowercase()) || item.type.toString().lowercase().contains(text.lowercase())) {
+            val typeName = when(item.type){
+                1 ->  "Цветы"
+                2 ->  "Конструкции"
+                3 ->  "Прочее"
+                else -> ""
+            }
+            if (item.name.lowercase().contains(text.lowercase()) || typeName.lowercase().contains(text.lowercase())) {
                 filteredList.add(item)
             }
         }

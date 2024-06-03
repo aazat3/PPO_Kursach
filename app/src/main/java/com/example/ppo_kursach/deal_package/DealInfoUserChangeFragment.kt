@@ -1,4 +1,4 @@
-package com.example.ppo_kursach.users_deal_package
+package com.example.ppo_kursach.deal_package
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -20,13 +20,15 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ppo_kursach.R
-import com.example.ppo_kursach.deal_package.DealClass
 import com.example.ppo_kursach.user_package.UserClass
+import com.example.ppo_kursach.users_deal_package.UserAdapter
+import com.example.ppo_kursach.users_deal_package.DealsUserAddFragmentArgs
+import com.example.ppo_kursach.users_deal_package.UsersDealClass
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class DealsUserAddFragment : Fragment() {
+class DealInfoUserChangeFragment : Fragment() {
 
     private lateinit var firebaseDealsUserDatabase: DatabaseReference
     private lateinit var firebaseUserDatabase: DatabaseReference
@@ -52,7 +54,7 @@ class DealsUserAddFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_deals_user_add, container, false)
+        val view = inflater.inflate(R.layout.fragment_deal_info_user_change, container, false)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
         return view
@@ -129,7 +131,6 @@ class DealsUserAddFragment : Fragment() {
         firebaseUserDatabase.get().addOnSuccessListener{
             for (dataSnapshot in it.children) {
                 val user = dataSnapshot.getValue(UserClass::class.java)
-                var flag = false
                 if (user != null) {
                     firebaseDealsUserDatabase.get().addOnSuccessListener{
                         for (dataSnapshot2 in it.children) {
@@ -137,14 +138,11 @@ class DealsUserAddFragment : Fragment() {
                                 UsersDealClass::class.java)
                             if (dealsUser != null) {
                                 if (dealsUser.idUser == user.idUser && dealsUser.idDeal == deal.idDeal) {
-                                    flag = true
                                 }
                             }
                         }
-                        if (!flag) {
-                            dealsUserList.add(user)
-                            userAdapter.notifyDataSetChanged()
-                        }
+                        dealsUserList.add(user)
+                        userAdapter.notifyDataSetChanged()
                     }
                 }
             }
