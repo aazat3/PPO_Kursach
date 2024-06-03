@@ -84,6 +84,7 @@ class DealFragment : Fragment(){
             }
 
             if (returnedCompleteDeal != null) {
+                firebaseDealDatabase.child(returnedCompleteDeal.idDeal.toString()).removeValue()
                 Firebase.database.getReference("StatisticClass").child(returnedCompleteDeal.idDeal.toString()).setValue(returnedCompleteDeal)
                 val action = DealFragmentDirections.actionDealFragmentToStatisticFragment(
                     returnedCompleteDeal
