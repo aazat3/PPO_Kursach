@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide
 import com.example.ppo_kursach.decoration_package.DecorationInfoFragmentArgs
 import com.example.ppo_kursach.R
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 class DecorationInfoFragment : Fragment() {
     private val args: DecorationInfoFragmentArgs by navArgs()
@@ -207,7 +208,15 @@ class DecorationInfoFragment : Fragment() {
                     val imageUri: Uri? = result.data?.data
                     val sd = getFileName(requireContext(), imageUri!!)
                     val uploadTask = storage.child("$sd").putFile(imageUri)
-                    val deleteRef = storage.child(photoName)
+                    var deleteRef: StorageReference
+                    if(photoName != ""){
+                        deleteRef = storage.child(photoName)
+                        deleteRef.delete().addOnSuccessListener {
+                            // File deleted successfully
+                        }.addOnFailureListener {
+                            Log.e("Firebase", "Failed in deleting")
+                        }
+                    }
                     photoName = sd.toString()
 
                     uploadTask.addOnSuccessListener {
@@ -215,11 +224,6 @@ class DecorationInfoFragment : Fragment() {
                             Glide.with(this)
                                 .load(it)
                                 .into(photo)
-                            deleteRef.delete().addOnSuccessListener {
-                                // File deleted successfully
-                            }.addOnFailureListener {
-                                Log.e("Firebase", "Failed in deleting")
-                            }
                             Log.e("Firebase", "download passed")
                         }.addOnFailureListener {
                             Log.e("Firebase", "Failed in downloading")
